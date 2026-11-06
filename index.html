@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUICE TRUE - POS & Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // TEMPEL URL WEB APP APPS SCRIPT ANDA DI DALAM TANDA KUTIP DI BAWAH INI:
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAN_El24VwGyOfxjllOCTaJu5OB0UQzBBc1MaTs4jHsevtc2o9QWBn3HRmBqQZlBwRlw/exec";
+    </script>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+    <div id="app" class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-emerald-800 text-white flex flex-col justify-between hidden md:flex">
+            <div>
+                <div class="p-5 text-2xl font-bold tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-glass-water"></i> JUICE TRUE
+                </div>
+                <nav class="mt-5 space-y-1 px-3">
+                    <a href="#" onclick="switchTab('pos')" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-emerald-700 text-white font-medium"><i class="fa-solid fa-cash-register w-5"></i> POS Kasir</a>
+                    <a href="#" onclick="switchTab('catalog')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-emerald-700 text-emerald-100"><i class="fa-solid fa-boxes-stacked w-5"></i> Katalog Produk</a>
+                    <a href="#" onclick="switchTab('reports')" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-emerald-700 text-emerald-100"><i class="fa-solid fa-chart-line w-5"></i> Laporan & Margin</a>
+                </nav>
+            </div>
+            <div class="p-4 bg-emerald-900 text-sm flex justify-between items-center">
+                <div>
+                    <p class="font-bold" id="currentRoleLabel">Kasir</p>
+                    <p class="text-xs text-emerald-300">Cloud Sync Active</p>
+                </div>
+                <button onclick="openRoleModal()" class="bg-emerald-700 px-3 py-1.5 rounded text-xs hover:bg-emerald-600">Ganti Role</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden">
+            <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6 z-10">
+                <h1 class="text-xl font-bold text-gray-800" id="pageTitle">Point of Sales (POS)</h1>
+                <div class="flex items-center gap-4">
+                    <span id="syncStatus" class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium"><i class="fa-solid fa-cloud-arrow-up"></i> Terhubung ke Google Cloud</span>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6" id="mainContent">
+                <!-- POS Screen -->
+                <div id="tab-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+                    <div class="lg:col-span-2 flex flex-col h-full">
+                        <div class="mb-4 flex gap-2 overflow-x-auto pb-2">
+                            <button onclick="filterCategory('All')" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium whitespace-nowrap">Semua Menu</button>
+                            <button onclick="filterCategory('Ice Juice')" class="px-4 py-2 bg-white text-gray-700 border rounded-lg text-sm font-medium whitespace-nowrap hover:bg-gray-50">Ice Juice</button>
+                            <button onclick="filterCategory('Ice Coffee')" class="px-4 py-2 bg-white text-gray-700 border rounded-lg text-sm font-medium whitespace-nowrap hover:bg-gray-50">Ice Coffee</button>
+                            <button onclick="filterCategory('Ice Tea')" class="px-4 py-2 bg-white text-gray-700 border rounded-lg text-sm font-medium whitespace-nowrap hover:bg-gray-50">Ice Tea</button>
+                        </div>
+                        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto flex-1 pr-2">
+                            <!-- Produk dimuat dinamis -->
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border p-4 flex flex-col h-full">
+                        <h2 class="font-bold text-lg mb-3 text-gray-800"><i class="fa-solid fa-cart-shopping"></i> Keranjang Pesanan</h2>
+                        <div id="cartList" class="flex-1 overflow-y-auto space-y-3 pr-1 divide-y">
+                            <p class="text-gray-400 text-center py-10 text-sm">Keranjang masih kosong</p>
+                        </div>
+                        <div class="border-t pt-4 mt-4">
+                            <div class="flex justify-between font-bold text-lg mb-4">
+                                <span>Total:</span>
+                                <span id="cartTotal" class="text-emerald-600">Rp 0</span>
+                            </div>
+                            <button onclick="checkout()" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md hover:bg-emerald-700">Bayar Sekarang</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Catalog Screen -->
+                <div id="tab-catalog" class="hidden">
+                    <h2 class="text-xl font-bold mb-4">Katalog Produk (Google Sheets Database)</h2>
+                    <div class="bg-white p-4 rounded-xl shadow border">
+                        <p class="text-gray-600 mb-4">Produk di bawah ini diambil secara langsung dari Sheet **Produk** di Google Drive Anda.</p>
+                        <div id="catalogList" class="space-y-2">Loading produk...</div>
+                    </div>
+                </div>
+
+                <!-- Reports Screen -->
+                <div id="tab-reports" class="hidden">
+                    <h2 class="text-xl font-bold mb-4">Laporan Penjualan Cloud</h2>
+                    <p class="text-gray-600">Setiap transaksi pembayaran kasir akan otomatis tersimpan rapi di Sheet **Transaksi**.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Role Modal PIN -->
+    <div id="roleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-xl w-80 shadow-lg">
+            <h3 class="font-bold text-lg mb-3">Masukkan PIN Akses</h3>
+            <input type="password" id="pinInput" placeholder="PIN (0000 / 1234)" class="w-full border p-2 rounded mb-4 text-center tracking-widest text-lg focus:outline-emerald-600">
+            <div class="flex gap-2">
+                <button onclick="verifyPin()" class="flex-1 bg-emerald-600 text-white py-2 rounded font-bold hover:bg-emerald-700">Masuk</button>
+                <button onclick="closeRoleModal()" class="flex-1 bg-gray-200 py-2 rounded hover:bg-gray-300">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let cart = [];
+
+        // Ambil data produk dari Google Sheets saat aplikasi dibuka
+        async function fetchProducts() {
+            try {
+                let res = await fetch(SCRIPT_URL);
+                let data = await res.json();
+                if(data && data.length > 0) {
+                    products = data;
+                    renderProducts();
+                    renderCatalog();
+                } else {
+                    // Fallback data jika sheet produk kosong
+                    products = [
+                        { id: "P01", name: "Alpukat Juice", category: "Ice Juice", price: 8000, stock: 50, image: "https://images.unsplash.com/photo-1613478223719-2ab802602423?w=300" },
+                        { id: "P02", name: "Caffe Latte", category: "Ice Coffee", price: 8000, stock: 40, image: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=300" },
+                        { id: "P03", name: "Lemon Tea", category: "Ice Tea", price: 5000, stock: 60, image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300" }
+                    ];
+                    renderProducts();
+                }
+            } catch (e) {
+                console.error("Gagal memuat produk dari cloud:", e);
+            }
+        }
+
+        function renderProducts(filter = "All") {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = "";
+            let filtered = filter === "All" ? products : products.filter(p => p.category === filter);
+            filtered.forEach(p => {
+                grid.innerHTML += `
+                    <div onclick="addToCart('${p.id}')" class="bg-white border rounded-xl p-3 shadow-sm hover:shadow-md cursor-pointer transition flex flex-col justify-between">
+                        <img src="${p.image || 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300'}" class="w-full h-24 object-cover rounded-lg mb-2">
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-800">${p.name}</h4>
+                            <p class="text-xs text-emerald-600 font-bold mt-1">Rp ${Number(p.price).toLocaleString()}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderCatalog() {
+            const catList = document.getElementById('catalogList');
+            catList.innerHTML = "";
+            products.forEach(p => {
+                catList.innerHTML += `
+                    <div class="flex justify-between items-center border-b py-2 text-sm">
+                        <span><b>${p.name}</b> (${p.category})</span>
+                        <span class="font-bold text-emerald-600">Rp ${Number(p.price).toLocaleString()} | Stok: ${p.stock}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(id) {
+            let prod = products.find(p => p.id === id);
+            let item = cart.find(i => i.id === id);
+            if(item) { item.qty++; } else { cart.push({...prod, qty: 1}); }
+            renderCart();
+        }
+
+        function renderCart() {
+            let list = document.getElementById('cartList');
+            let total = 0;
+            if(cart.length === 0) {
+                list.innerHTML = `<p class="text-gray-400 text-center py-10 text-sm">Keranjang masih kosong</p>`;
+                document.getElementById('cartTotal').innerText = "Rp 0";
+                return;
+            }
+            list.innerHTML = "";
+            cart.forEach(i => {
+                total += i.price * i.qty;
+                list.innerHTML += `
+                    <div class="py-2 flex justify-between items-center text-sm">
+                        <div>
+                            <p class="font-bold text-gray-800">${i.name}</p>
+                            <p class="text-xs text-gray-500">Rp ${Number(i.price).toLocaleString()} x ${i.qty}</p>
+                        </div>
+                        <span class="font-bold text-emerald-600">Rp ${(i.price * i.qty).toLocaleString()}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('cartTotal').innerText = "Rp " + total.toLocaleString();
+        }
+
+        function checkout() {
+            if(cart.length === 0) return alert("Keranjang kosong!");
+            let total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            let transactionData = {
+                id: "TRX-" + Date.now(),
+                tanggal: new Date().toLocaleString(),
+                kasir: document.getElementById('currentRoleLabel').innerText,
+                tipe: "Takeaway",
+                item: cart.map(i => `${i.name} (${i.qty})`).join(", "),
+                total: total,
+                metode: "Tunai"
+            };
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(transactionData)
+            }).then(() => {
+                alert("Transaksi Berhasil & Tercatat di Google Sheets!");
+                cart = [];
+                renderCart();
+            }).catch(err => {
+                alert("Gagal koneksi ke cloud: " + err);
+            });
+        }
+
+        function switchTab(tab) {
+            document.getElementById('tab-pos').classList.add('hidden');
+            document.getElementById('tab-catalog').classList.add('hidden');
+            document.getElementById('tab-reports').classList.add('hidden');
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+        }
+
+        function filterCategory(cat) { renderProducts(cat); }
+        function openRoleModal() { document.getElementById('roleModal').classList.remove('hidden'); }
+        function closeRoleModal() { document.getElementById('roleModal').classList.add('hidden'); }
+        function verifyPin() {
+            let pin = document.getElementById('pinInput').value;
+            if(pin === "1234") {
+                document.getElementById('currentRoleLabel').innerText = "Admin";
+                alert("Berhasil masuk sebagai Admin!");
+                closeRoleModal();
+            } else if(pin === "0000") {
+                document.getElementById('currentRoleLabel').innerText = "Kasir";
+                alert("Berhasil masuk sebagai Kasir!");
+                closeRoleModal();
+            } else {
+                alert("PIN Salah! Coba 0000 atau 1234");
+            }
+        }
+
+        // Muat data saat halaman siap
+        fetchProducts();
+    </script>
+</body>
+</html>
