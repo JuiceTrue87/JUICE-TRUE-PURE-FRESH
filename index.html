@@ -52,7 +52,7 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-@media print {
+        @media print {
             body * { visibility: hidden; }
             #printable-receipt, #printable-receipt * { visibility: visible; }
             #printable-receipt { 
@@ -60,14 +60,14 @@
                 left: 0; 
                 top: 0; 
                 width: 100% !important; 
-                max-width: 58mm !important; /* Sesuaikan 80mm jika printer Anda 80mm */
+                max-width: 58mm !important; 
                 color: #000 !important; 
                 padding: 0 !important;
                 margin: 0 !important;
                 font-size: 11px !important;
             }
             @page {
-                size: 58mm auto; /* Memaksa tinggi halaman otomatis mengikuti panjang struk */
+                size: 58mm auto;
                 margin: 0mm;
             }
         }
@@ -78,9 +78,8 @@
     <!-- Toast Notifications -->
     <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- INTERNATIONAL CAFE SIDEBAR NAVIGATION (Desktop: Kiri | Mobile: Disembunyikan/Bisa jadi menu bawah jika diperlukan, tapi saat ini di-fixed flex-col) -->
+    <!-- SIDEBAR NAVIGATION -->
     <aside class="w-full md:w-64 bg-slate-900 border-r border-slate-800 flex flex-row md:flex-col flex-none z-20 justify-between md:justify-start">
-        <!-- Brand Header -->
         <div class="p-3 md:p-5 border-b md:border-b border-slate-800 flex items-center gap-2.5">
             <div class="w-8 h-8 md:w-10 md:h-10 rounded-2xl bg-gradient-to-br from-brand-500 to-citrus-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
                 <i class="fa-solid fa-glass-water text-base md:text-xl"></i>
@@ -91,7 +90,6 @@
             </div>
         </div>
 
-        <!-- Role Badge Info & Switch -->
         <div class="hidden md:flex px-5 py-3 bg-slate-800/40 border-b border-slate-800 items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></div>
@@ -102,35 +100,29 @@
             </button>
         </div>
 
-        <!-- Navigation Links (Horizontal di Mobile, Vertikal di Desktop) -->
         <nav class="flex-1 flex md:flex-col p-2 md:p-3 gap-1 overflow-x-auto md:overflow-y-auto items-center md:items-stretch">
             <button id="nav-pos" onclick="switchView('pos')" class="px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs font-bold flex items-center justify-center md:justify-start gap-2 md:gap-3 transition-all bg-brand-500 text-white shadow-lg shadow-brand-500/25">
                 <i class="fa-solid fa-cash-register text-sm"></i>
                 <span class="hidden sm:inline">POS Kasir</span>
             </button>
-
             <button id="nav-katalog" onclick="checkAdminAuth('katalog')" class="px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs font-semibold flex items-center justify-center md:justify-start gap-2 md:gap-3 transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                 <i class="fa-solid fa-boxes-stacked text-sm"></i>
                 <span class="hidden sm:inline">Katalog Produk</span>
             </button>
-
             <button id="nav-laporan" onclick="checkAdminAuth('laporan')" class="px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs font-semibold flex items-center justify-center md:justify-start gap-2 md:gap-3 transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                 <i class="fa-solid fa-chart-line text-sm"></i>
                 <span class="hidden sm:inline">Laporan & Margin</span>
             </button>
-
             <button id="nav-users" onclick="checkAdminAuth('users')" class="px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs font-semibold flex items-center justify-center md:justify-start gap-2 md:gap-3 transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                 <i class="fa-solid fa-users-gear text-sm"></i>
                 <span class="hidden sm:inline">Manajemen User</span>
             </button>
-
             <button id="nav-settings" onclick="checkAdminAuth('settings')" class="px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs font-semibold flex items-center justify-center md:justify-start gap-2 md:gap-3 transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                 <i class="fa-solid fa-sliders text-sm"></i>
                 <span class="hidden sm:inline">Profil & Pengaturan</span>
             </button>
         </nav>
 
-        <!-- Sidebar Footer Clock (Desktop Only) -->
         <div class="hidden md:block p-4 border-t border-slate-800 text-center">
             <div id="sidebar-time" class="text-sm font-mono font-bold text-slate-200">12:00:00 WIB</div>
             <div id="sidebar-date" class="text-[10px] text-slate-500">Sabtu, 31 Okt 2026</div>
@@ -140,26 +132,23 @@
     <!-- MAIN CONTENT VIEW CONTAINER -->
     <main class="flex-1 flex flex-col overflow-hidden bg-slate-950 relative">
 
-        <!-- VIEW 1: POS KASIR (OPTIMIZED FOR MOBILE & DESKTOP) -->
+        <!-- VIEW 1: POS KASIR -->
         <div id="view-pos" class="flex-1 flex flex-col relative overflow-hidden bg-slate-950">
-            <!-- Catalog Side -->
             <div class="flex-1 flex flex-col overflow-hidden pb-24 md:pb-0 md:border-r md:border-slate-800 bg-slate-900/50">
                 <div class="p-3 md:p-4 bg-slate-900 border-b border-slate-800 flex flex-col gap-2.5">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         <input type="text" id="pos-search-input" onkeyup="filterPosProducts()" placeholder="Cari menu (Alpukat, Matcha, Roti...)" class="w-full pl-10 pr-4 py-3 text-sm bg-slate-800/90 border border-slate-700 rounded-xl text-white font-medium focus:outline-none focus:border-brand-500 placeholder-slate-400 shadow-inner">
                     </div>
-                    <!-- Category Pills dengan padding lebih besar agar mudah disentuh di HP -->
                     <div class="flex items-center gap-2 overflow-x-auto pb-1.5 pt-0.5" id="pos-category-pills"></div>
                 </div>
 
                 <div class="flex-1 overflow-y-auto p-3 md:p-4">
-                    <!-- Grid Produk: 2 Kolom di HP (gap 3), 3-4 kolom di Tablet/PC -->
                     <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 md:gap-4"></div>
                 </div>
             </div>
 
-            <!-- MOBILE FLOATING CART BAR (Sangat kontras dan mudah ditekan di HP) -->
+            <!-- MOBILE FLOATING CART BAR -->
             <div id="mobile-cart-bar" class="md:hidden fixed bottom-3 left-3 right-3 bg-slate-900/95 backdrop-blur-md border border-brand-500/40 p-3.5 rounded-2xl flex items-center justify-between z-30 shadow-2xl shadow-brand-500/10 hidden">
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl bg-brand-500 text-white flex items-center justify-center font-bold relative shadow-lg shadow-brand-500/30">
@@ -176,7 +165,7 @@
                 </button>
             </div>
 
-            <!-- Cart Panel (Desktop: Sidebar kanan | Mobile: Fullscreen Modal Modal Cantik) -->
+            <!-- Cart Panel -->
             <div id="desktop-cart-panel" class="hidden md:flex bg-slate-900 flex-col flex-none border-l border-slate-800 absolute md:relative inset-0 md:inset-auto md:w-96 z-40 transition-transform">
                 <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900">
                     <div class="flex items-center gap-2">
@@ -221,7 +210,7 @@
             </div>
         </div>
 
-        <!-- VIEW 2: KATALOG PRODUK CRUD -->
+        <!-- VIEW 2: KATALOG PRODUK -->
         <div id="view-katalog" class="hidden flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
                 <div>
@@ -254,7 +243,7 @@
             </div>
         </div>
 
-<!-- VIEW 3: LAPORAN & MARGIN -->
+        <!-- VIEW 3: LAPORAN & MARGIN -->
         <div id="view-laporan" class="hidden flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800 pb-4">
                 <div>
@@ -336,12 +325,10 @@
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Nama Outlet / Cafe</label>
                     <input type="text" id="set-cafe-name" value="JUICE TRUE - Fresh Beverage & Ice Corner" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
                 </div>
-
                 <div>
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Alamat Outlet</label>
                     <input type="text" id="set-cafe-address" value="Jl. Raya Juice True No. 88, Surabaya" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Pajak PB1 (%)</label>
@@ -352,12 +339,10 @@
                         <input type="number" id="set-default-ops" value="1500" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
                     </div>
                 </div>
-
                 <div>
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Pesan Footer Struk</label>
                     <input type="text" id="set-receipt-footer" value="Terima Kasih atas Kunjungan Anda! Segarnya Alami, Manisnya Pas." class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
                 </div>
-
                 <div class="pt-4 border-t border-slate-800 flex justify-end">
                     <button onclick="saveSettings()" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl text-xs shadow-lg">
                         <i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan
@@ -396,7 +381,6 @@
 
             <form id="prod-form" onsubmit="saveProductForm(event)" class="space-y-4 text-xs">
                 <input type="hidden" id="crud-prod-id">
-                
                 <div class="grid grid-cols-2 gap-3">
                     <div class="col-span-2 sm:col-span-1">
                         <label class="block font-bold text-slate-400 mb-1">Nama Produk</label>
@@ -416,12 +400,10 @@
                         </select>
                     </div>
                 </div>
-
                 <div>
                     <label class="block font-bold text-slate-400 mb-1">URL / Link Foto Produk</label>
                     <input type="url" id="crud-prod-img" required placeholder="https://..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
                 </div>
-
                 <div class="grid grid-cols-3 gap-3">
                     <div>
                         <label class="block font-bold text-slate-400 mb-1">Satuan</label>
@@ -436,7 +418,6 @@
                         <input type="number" id="crud-prod-price" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
                     </div>
                 </div>
-
                 <div class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-3">
                     <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Kalkulasi HPP</span>
                     <div class="grid grid-cols-2 gap-2">
@@ -464,7 +445,6 @@
                         <span id="crud-total-hpp-preview" class="text-brand-400">Rp 0</span>
                     </div>
                 </div>
-
                 <div class="pt-3 flex justify-end gap-2">
                     <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-slate-800 text-slate-400 font-bold rounded-xl">Batal</button>
                     <button type="submit" class="px-5 py-2 bg-brand-500 text-white font-bold rounded-xl shadow-lg">Simpan Produk</button>
@@ -516,7 +496,7 @@
     <!-- MODAL RECEIPT STRUK -->
     <div id="modal-receipt" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
-            <div id="printable-receipt" class="bg-white text-slate-900 p-3 rounded-xl font-mono text-xs space-y-2 overflow-y-auto">
+            <div id="printable-receipt" class="bg-white text-slate-900 p-4 rounded-xl font-mono text-[11px] space-y-2 overflow-y-auto">
                 <div class="text-center space-y-0.5">
                     <h2 class="font-extrabold text-base tracking-wider" id="rec-cafe-name">JUICE TRUE</h2>
                     <p class="text-[9px] text-slate-500" id="rec-cafe-addr">Surabaya, Indonesia</p>
@@ -540,7 +520,6 @@
                 <div class="border-b border-dashed border-slate-400 my-2"></div>
                 <p class="text-center text-[9px] text-slate-500 font-semibold" id="rec-footer">Terima Kasih atas Kunjungan Anda!</p>
             </div>
-
             <div class="flex gap-2 pt-2 border-t border-slate-800">
                 <button onclick="window.print()" class="flex-1 py-2.5 bg-slate-800 text-white font-bold rounded-xl text-xs"><i class="fa-solid fa-print"></i> Cetak</button>
                 <button onclick="closeReceiptModal()" class="flex-1 py-2.5 bg-brand-500 text-white font-bold rounded-xl text-xs">Selesai</button>
@@ -605,10 +584,24 @@
             renderPosProducts();
             updateTime();
             setInterval(updateTime, 1000);
-            document.getElementById('label-tax-rate').innerText = settings.taxRate;
 
-            // Sinkronisasi data dari Google Sheets saat aplikasi pertama dibuka
+            // 1. Tarik Pengaturan terbaru dari Spreadsheet (Cloud)
             if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+                fetch(SCRIPT_URL + '?action=getSettings')
+                .then(res => res.json())
+                .then(cloudSettings => {
+                    if (cloudSettings && cloudSettings.cafeName) {
+                        settings = cloudSettings;
+                        localStorage.setItem('jt_settings', JSON.stringify(settings));
+                    }
+                    document.getElementById('label-tax-rate').innerText = settings.taxRate;
+                    if(document.getElementById('view-settings') && !document.getElementById('view-settings').classList.contains('hidden')) {
+                        loadSettingsView();
+                    }
+                })
+                .catch(err => console.log('Menggunakan pengaturan lokal:', err));
+
+                // 2. Tarik Riwayat Transaksi terbaru dari Spreadsheet (Cloud)
                 fetch(SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -619,9 +612,12 @@
                     if(res.status === 'success' && res.data) {
                         transactions = res.data;
                         localStorage.setItem('jt_trx', JSON.stringify(transactions));
+                        if(document.getElementById('view-laporan') && !document.getElementById('view-laporan').classList.contains('hidden')) {
+                            renderLaporanView();
+                        }
                     }
                 })
-                .catch(err => console.log('Sinkronisasi awal dilewati:', err));
+                .catch(err => console.log('Gagal sinkron transaksi:', err));
             }
         };
 
@@ -942,6 +938,31 @@
 
         function closeReceiptModal() { document.getElementById('modal-receipt').classList.add('hidden'); }
 
+        function clearAllTransactions() {
+            if (currentRole !== 'ADMIN') {
+                alert('Akses ditolak! Hanya Admin yang dapat menghapus seluruh riwayat transaksi.');
+                return;
+            }
+
+            if (confirm('Hapus SELURUH riwayat transaksi? Data akan terhapus di perangkat ini dan juga di Google Spreadsheet.')) {
+                transactions = [];
+                localStorage.removeItem('jt_trx');
+                renderLaporanView();
+                showToast('Riwayat lokal berhasil di-reset!');
+
+                if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'clearTransactions' })
+                    })
+                    .then(res => res.json())
+                    .then(res => console.log('Spreadsheet berhasil dibersihkan:', res))
+                    .catch(err => console.log('Gagal sinkron cloud:', err));
+                }
+            }
+        }
+
         function renderCatalogTable() {
             const tbody = document.getElementById('catalog-table-body');
             tbody.innerHTML = products.map(p => {
@@ -1055,8 +1076,8 @@
         }
 
         function renderLaporanView() {
-            const omzet = transactions.reduce((s, t) => s + t.total, 0);
-            const estHpp = transactions.reduce((s, t) => s + Math.round(t.subtotal * 0.45), 0);
+            const omzet = transactions.reduce((s, t) => s + (t.total || 0), 0);
+            const estHpp = transactions.reduce((s, t) => s + Math.round((t.subtotal || 0) * 0.45), 0);
             const estProfit = omzet - estHpp;
 
             document.getElementById('rep-omzet').innerText = formatIDR(omzet);
@@ -1066,11 +1087,11 @@
 
             document.getElementById('rep-trx-table').innerHTML = transactions.map(t => `
                 <tr class="border-b border-slate-800">
-                    <td class="p-3 font-mono font-bold text-brand-400">#${t.id}</td>
-                    <td class="p-3 text-slate-400">${t.date}</td>
-                    <td class="p-3 font-bold uppercase text-[10px]">${t.method}</td>
-                    <td class="p-3 text-slate-300">${t.items.map(i => `${i.name} (${i.qty})`).join(', ')}</td>
-                    <td class="p-3 text-right font-bold text-white">${formatIDR(t.total)}</td>
+                    <td class="p-3 font-mono font-bold text-brand-400">#${t.id || ' - '}</td>
+                    <td class="p-3 text-slate-400">${t.date || ' - '}</td>
+                    <td class="p-3 font-bold uppercase text-[10px]">${t.method || t.metode || 'TUNAI'}</td>
+                    <td class="p-3 text-slate-300">${t.itemSummary || (t.items ? t.items.map(i => `${i.name} (${i.qty})`).join(', ') : '')}</td>
+                    <td class="p-3 text-right font-bold text-white">${formatIDR(t.total || 0)}</td>
                 </tr>
             `).join('');
         }
@@ -1129,36 +1150,22 @@
                 defaultOps: parseFloat(document.getElementById('set-default-ops').value) || 0,
                 receiptFooter: document.getElementById('set-receipt-footer').value
             };
+            
             localStorage.setItem('jt_settings', JSON.stringify(settings));
             document.getElementById('label-tax-rate').innerText = settings.taxRate;
             showToast('Pengaturan Disimpan!');
-        }
-function clearAllTransactions() {
-            if (currentRole !== 'ADMIN') {
-                alert('Akses ditolak! Hanya Admin yang dapat menghapus seluruh riwayat transaksi.');
-                return;
-            }
 
-            if (confirm('Hapus SELURUH riwayat transaksi? Data akan terhapus di perangkat ini dan juga di Google Spreadsheet.')) {
-                // 1. Bersihkan data lokal di browser
-                transactions = [];
-                localStorage.removeItem('jt_trx');
-                renderLaporanView();
-                showToast('Riwayat lokal berhasil di-reset!');
-
-                // 2. Kirim perintah kosongkan data ke Google Spreadsheet (Cloud)
-                if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
-                    fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'clearTransactions' })
-                    })
-                    .then(res => res.json())
-                    .then(res => console.log('Spreadsheet berhasil dibersihkan:', res))
-                    .catch(err => console.log('Gagal sinkron cloud:', err));
-                }
+            if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'saveSettings', settings: settings })
+                })
+                .then(res => res.json())
+                .catch(err => console.log('Gagal sinkron pengaturan ke cloud:', err));
             }
         }
+
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ transactions, products, settings, users }, null, 2));
             const a = document.createElement('a');
