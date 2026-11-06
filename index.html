@@ -810,32 +810,48 @@
         }
 
         function processCheckout() {
-            const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-            const tax = Math.round(subtotal * (settings.taxRate / 100));
-            const total = subtotal + tax;
-            let paid = total;
+    const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    const tax = Math.round(subtotal * (settings.taxRate / 100));
+    const total = subtotal + tax;
+    let paid = total;
 
-            if (selectedPaymentMethod === 'cash') {
-                paid = parseFloat(document.getElementById('cash-input').value) || 0;
-                if (paid < total) { alert('Nominal uang belum cukup!'); return; }
-            }
+    if (selectedPaymentMethod === 'cash') {
+        paid = parseFloat(document.getElementById('cash-input').value) || 0;
+        if (paid < total) { alert('Nominal uang belum cukup!'); return; }
+    }
 
-            const trx = {
-                id: 'TRX-' + Math.floor(100000 + Math.random() * 900000),
-                date: new Date().toLocaleString('id-ID'),
-                items: [...cart],
-                subtotal, tax, total, paid, change: paid - total,
-                method: selectedPaymentMethod
-            };
+    const trx = {
+        id: 'TRX-' + Math.floor(100000 + Math.random() * 900000),
+        date: new Date().toLocaleString('id-ID'),
+        items: [...cart],
+        subtotal, tax, total, paid, change: paid - total,
+        method: selectedPaymentMethod
+    };
 
-            transactions.unshift(trx);
-            localStorage.setItem('jt_trx', JSON.stringify(transactions));
+    // 1. Simpan ke Local Storage
+    transactions.unshift(trx);
+    localStorage.setItem('jt_trx', JSON.stringify(transactions));
 
-            showReceiptModal(trx);
-            cart = [];
-            document.getElementById('cash-input').value = '';
-            renderCart();
-        }
+    // 2. KIRIM DATA KE GOOGLE APPS SCRIPT (SUPAYA MASUK SPREADSHEET)
+    if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({ action: 'saveTransaction', data: trx })
+        })
+        .then(res => res.json())
+        .then(res => console.log('Sync Google Sheets Sukses:', res))
+        .catch(err => console.log('Sync Google Sheets Error:', err));
+    }
+
+    // 3. Tampilkan Struk & Reset Cart
+    showReceiptModal(trx);
+    cart = [];
+    document.getElementById('cash-input').value = '';
+    renderCart();
+}
 
         function showReceiptModal(trx) {
             document.getElementById('rec-cafe-name').innerText = settings.cafeName;
