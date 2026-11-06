@@ -415,19 +415,19 @@
                     <input type="url" id="crud-prod-img" required placeholder="https://..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
                 </div>
                 <div class="grid grid-cols-3 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-400 mb-1">Satuan</label>
-                        <input type="text" id="crud-prod-unit" placeholder="Cup / Porsi" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-400 mb-1">Stok</label>
-                        <input type="number" id="crud-prod-stock" value="100" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-400 mb-1">Harga Jual Dasar (Rp)</label>
-                        <input type="number" id="crud-prod-price" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white" placeholder="Contoh: 8000">
-                    </div>
-                </div>
+    <div>
+        <label class="block font-bold text-slate-400 mb-1">Satuan</label>
+        <input type="text" id="crud-prod-unit" placeholder="Cup / Porsi" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
+    </div>
+    <div>
+        <label class="block font-bold text-slate-400 mb-1">Stok</label>
+        <input type="number" id="crud-prod-stock" value="100" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
+    </div>
+    <div id="single-price-wrapper">
+        <label class="block font-bold text-slate-400 mb-1">Harga Jual (Rp)</label>
+        <input type="number" id="crud-prod-price" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white" placeholder="Contoh: 3000">
+    </div>
+</div>
 
                 <!-- Variasi Ukuran Ganda (Untuk Ice Juice / Ice Coffee) -->
                 <div class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-2">
@@ -1219,6 +1219,99 @@
             a.download = `JUICE_TRUE_Backup_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
         }
+        // Saat kategori dipilih di form CRUD, sesuaikan visibilitas harga tunggal vs variasi ukuran
+document.getElementById('crud-prod-cat').addEventListener('change', function() {
+    const cat = this.value;
+    const isBeverageWithVar = (cat === 'juice' || cat === 'coffee');
+    const priceWrapper = document.getElementById('single-price-wrapper');
+    
+    if (isBeverageWithVar) {
+        priceWrapper.style.display = 'none'; // Ice Juice & Coffee pakai 3 pilihan variasi
+    } else {
+        priceWrapper.style.display = 'block'; // Produk lain pakai 1 harga jual
+    }
+});
+
+// Fungsi saat klik tambah produk di POS
+function handlePosItemClick(id) {
+    const prod = products.find(p => p.id === id);
+    if (!prod) return;
+
+    // Cek apakah kategori ice juice / ice coffee dan memiliki variasi
+    if ((prod.category === 'juice' || prod.category === 'coffee') && prod.hasVariations && prod.variations && prod.variations.length > 0) {
+        document.getElementById('var-title').innerText = `Pilih 3 Pilihan Ukuran - ${prod.name}`;
+        document.getElementById('var-options-container').innerHTML = prod.variations.map(v => {
+            const hppKg = v.hppPerKg || prod.hppKg || 60000;
+            const grams = v.grams || 20;
+            const totalHpp = Math.round((hppKg / 1000) * grams) + 1460;
+            const margin = (((v.price - totalHpp) / v.price) * 100).toFixed(1);
+
+            return `
+                <button onclick="addVarToCart(${prod.id}, '${v.size}', ${v.price})" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-2xl flex justify-between items-center text-sm font-bold hover:border-brand-500 hover:bg-slate-750 transition-all shadow">
+                    <div class="text-left">
+                        <span class="text-white block font-bold">${v.size} (${grams}g)</span>
+                        <span class="text-[10px] text-slate-400">HPP: ${formatIDR(totalHpp)} | Margin: ${margin}%</span>
+                    </div>
+                    <span class="text-brand-400 font-extrabold text-base">${formatIDR(v.price)}</span>
+                </button>
+            `;
+        }).join('');
+        document.getElementById('modal-variation').classList.remove('hidden');
+    } else {
+        // Untuk produk jenis lain (1 harga jual)
+        addToCart(prod.id, prod.name, prod.price, prod.img);
+    }
+}
+
+// Memasukkan pilihan variasi ke keranjang dengan nama dan harga spesifik
+function addVarToCart(id, size, price) {
+    const prod = products.find(p => p.id === id);
+    closeVariationModal();
+    // Format nama item di keranjang & laporan mencantumkan ukurannya (misal: Jus Alpukat - 16 oz)
+    addToCart(prod.id, `${prod.name} (${size})`, price, prod.img);
+}
+
+// Saat disimpan dari form CRUD
+function saveProductForm(e) {
+    e.preventDefault();
+    const id = document.getElementById('crud-prod-id').value;
+    const category = document.getElementById('crud-prod-cat').value;
+    const isBeverageWithVar = (category === 'juice' || category === 'coffee');
+    
+    const variationRows = document.querySelectorAll('.var-row');
+    let variations = [];
+    let hasVariations = false;
+
+    if (isBeverageWithVar && variationRows.length > 0) {
+        variationRows.forEach(row => {
+            const size = row.querySelector('.var-size').value;
+            const grams = parseFloat(row.querySelector('.var-grams').value) || 0;
+            const price = parseFloat(row.querySelector('.var-price').value) || 0;
+            if (size && price) {
+                variations.push({ size, grams, hppPerKg: 60000, price });
+            }
+        });
+        if (variations.length > 0) hasVariations = true;
+    }
+
+    const singlePrice = parseFloat(document.getElementById('crud-prod-price').value) || 0;
+
+    const prodData = {
+        id: id ? parseInt(id) : Date.now(),
+        name: document.getElementById('crud-prod-name').value,
+        category: category,
+        img: document.getElementById('crud-prod-img').value,
+        unit: document.getElementById('crud-prod-unit').value,
+        stock: parseInt(document.getElementById('crud-prod-stock').value) || 0,
+        price: isBeverageWithVar ? (hasVariations ? variations[0].price : 0) : singlePrice,
+        hppKg: 60000,
+        opsKemasan: 1460,
+        hasVariations: isBeverageWithVar ? hasVariations : false,
+        variations: isBeverageWithVar ? variations : []
+    };
+
+    // Lanjutkan proses simpan ke localStorage / backend spreadsheet Anda...
+}
     </script>
 </body>
 </html>
