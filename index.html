@@ -851,28 +851,125 @@
 
     // 1. Simpan ke Local Storage
     transactions.unshift(trx);
-    localStorage.setItem('jt_trx', JSON.stringify(transactions));
+    localStorage.setItem('jt_trx', JSON.stringify(transactions));function renderCart() {
+            const container = document.getElementById('pos-cart-container');
+            const badgeEls = document.querySelectorAll('#pos-cart-badge');
+            badgeEls.forEach(el => el.innerText = cart.reduce((s, i) => s + i.qty, 0));
 
-    // 2. KIRIM DATA KE GOOGLE APPS SCRIPT (SUPAYA MASUK SPREADSHEET)
-    if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify({ action: 'saveTransaction', data: trx })
-        })
-        .then(res => res.json())
-        .then(res => console.log('Sync Google Sheets Sukses:', res))
-        .catch(err => console.log('Sync Google Sheets Error:', err));
-    }
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-slate-500 my-8">Keranjang kosong.</p>`;
+                updatePosSummary(0);
+                
+                // Tambahan: Sembunyikan floating bar dan tutup modal di HP jika keranjang kosong
+                const mobileBar = document.getElementById('mobile-cart-bar');
+                if (mobileBar) mobileBar.classList.add('hidden');
+                toggleMobileCartModal(false);
+                return;
+            }
 
-    // 3. Tampilkan Struk & Reset Cart
-    showReceiptModal(trx);
-    cart = [];
-    document.getElementById('cash-input').value = '';
-    renderCart();
-}
+            container.innerHTML = cart.map(i => `
+                <div class="p-2 bg-slate-800/60 border border-slate-700 rounded-xl flex items-center gap-2">
+                    <img src="${i.img}" class="w-8 h-8 rounded-lg object-cover">
+                    <div class="flex-1 min-w-0">
+                        <h5 class="font-bold text-white text-xs truncate">${i.name}</h5>
+                        <p class="text-[10px] text-brand-400 font-semibold">${formatIDR(i.price)}</p>
+                    </div>
+                    <div class="flex items-center gap-1 bg-slate-900 px-1.5 py-0.5 rounded-lg">
+                        <button onclick="updateCartQty('${i.name}', -1)" class="text-slate-400 hover:text-rose-400 text-xs font-bold">-</button>
+                        <span class="text-xs font-bold text-white w-4 text-center">${i.qty}</span>
+                        <button onclick="updateCartQty('${i.name}', 1)" class="text-slate-400 hover:text-brand-400 text-xs font-bold">+</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            updatePosSummary(subtotal);
+
+            // Tambahan: Munculkan & update floating bar di HP saat ada isi keranjang
+            const totalQty = cart.reduce((s, i) => s + i.qty, 0);
+            const mobileBar = document.getElementById('mobile-cart-bar');
+            if (mobileBar) {
+                document.getElementById('mobile-cart-badge').innerText = totalQty;
+                document.getElementById('mobile-cart-total').innerText = formatIDR(subtotal + Math.round(subtotal * (settings.taxRate / 100)));
+                mobileBar.classList.remove('hidden');
+            }
+        }
+
+        function updatePosSummary(subtotal) {
+            const tax = Math.round(subtotal * (settings.taxRate / 100));
+            const total = subtotal + tax;
+            document.getElementById('pos-subtotal').innerText = formatIDR(subtotal);
+            document.getElementById('pos-tax').innerText = formatIDR(tax);
+            document.getElementById('pos-total').innerText = formatIDR(total);
+            document.getElementById('btn-checkout').disabled = cart.length === 0;
+            calculateChange();
+        }
+
+        function selectPaymentMethod(m) {
+            selectedPaymentMethod = m;
+            document.querySelectorAll('.pay-btn').forEach(b => b.className = "pay-btn p-2 border border-slate-700 rounded-xl text-center text-xs text-slate-400 hover:bg-slate-800");
+            document.getElementById(`pay-btn-${m}`).className = "pay-btn p-2 border rounded-xl text-center text-xs font-bold bg-brand-500/20 border-brand-500 text-brand-400";
+            document.getElementById('cash-area').style.display = m === 'cash' ? 'block' : 'none';
+        }
+
+        function calculateChange() {
+            const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            const total = subtotal + Math.round(subtotal * (settings.taxRate / 100));
+            const input = parseFloat(document.getElementById('cash-input').value) || 0;
+            const diff = input - total;
+
+            const preview = document.getElementById('cash-change-preview');
+            if (diff >= 0) {
+                preview.innerText = `Kembali: ${formatIDR(diff)}`;
+                preview.className = "font-bold text-brand-400";
+            } else {
+                preview.innerText = `Kurang: ${formatIDR(Math.abs(diff))}`;
+                preview.className = "font-bold text-rose-400";
+            }
+        }
+
+        function processCheckout() {
+            const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            const tax = Math.round(subtotal * (settings.taxRate / 100));
+            const total = subtotal + tax;
+            let paid = total;
+
+            if (selectedPaymentMethod === 'cash') {
+                paid = parseFloat(document.getElementById('cash-input').value) || 0;
+                if (paid < total) { alert('Nominal uang belum cukup!'); return; }
+            }
+
+            const trx = {
+                id: 'TRX-' + Math.floor(100000 + Math.random() * 900000),
+                date: new Date().toLocaleString('id-ID'),
+                items: [...cart],
+                subtotal, tax, total, paid, change: paid - total,
+                method: selectedPaymentMethod
+            };
+
+            // 1. Simpan ke Local Storage
+            transactions.unshift(trx);
+            localStorage.setItem('jt_trx', JSON.stringify(transactions));
+
+            // 2. Kirim ke Google Sheets via SCRIPT_URL
+            if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'saveTransaction', data: trx })
+                })
+                .then(res => res.json())
+                .then(res => console.log('Sync Google Sheets Sukses:', res))
+                .catch(err => console.log('Sync Google Sheets Error:', err));
+            }
+
+            // 3. Tampilkan struk, reset cart, dan tutup modal keranjang HP
+            showReceiptModal(trx);
+            cart = [];
+            document.getElementById('cash-input').value = '';
+            renderCart();
+            toggleMobileCartModal(false);
+        }
 
         function showReceiptModal(trx) {
             document.getElementById('rec-cafe-name').innerText = settings.cafeName;
@@ -1101,6 +1198,16 @@
             a.download = `JUICE_TRUE_Backup_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
         }
+		function toggleMobileCartModal(open) {
+    const panel = document.getElementById('desktop-cart-panel');
+    if (open) {
+        panel.classList.remove('hidden');
+        panel.classList.add('flex', 'fixed', 'inset-0', 'z-50');
+    } else {
+        panel.classList.add('hidden');
+        panel.classList.remove('flex', 'fixed', 'inset-0', 'z-50');
+    }
+}
     </script>
 </body>
 </html>
