@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
 
     <script>
-	// ==========================================
+        // ==========================================
         // 🔗 LINK API GOOGLE APPS SCRIPT (WEB APP URL)
         // ==========================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAN_El24VwGyOfxjllOCTaJu5OB0UQzBBc1MaTs4jHsevtc2o9QWBn3HRmBqQZlBwRlw/exec";
@@ -126,9 +126,9 @@
     <!-- MAIN CONTENT VIEW CONTAINER -->
     <main class="flex-1 flex flex-col overflow-hidden bg-slate-950">
 
-<!-- VIEW 1: POS KASIR -->
+        <!-- VIEW 1: POS KASIR (RESPONSIVE MOBILE FRIENDLY) -->
         <div id="view-pos" class="flex-1 flex flex-col relative overflow-hidden bg-slate-950">
-            <!-- Catalog Side (Full width on mobile) -->
+            <!-- Catalog Side -->
             <div class="flex-1 flex flex-col overflow-hidden pb-20 md:pb-0 md:border-r md:border-slate-800 bg-slate-900/50">
                 <div class="p-3 md:p-4 bg-slate-900 border-b border-slate-800 flex flex-col gap-2.5">
                     <div class="relative">
@@ -143,7 +143,7 @@
                 </div>
             </div>
 
-            <!-- MOBILE FLOATING CART BAR (Hanya muncul di HP jika ada item) -->
+            <!-- MOBILE FLOATING CART BAR -->
             <div id="mobile-cart-bar" class="md:hidden absolute bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-3 flex items-center justify-between z-30 shadow-2xl hidden">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold relative">
@@ -160,8 +160,8 @@
                 </button>
             </div>
 
-            <!-- Cart Side (Desktop: Sidebar kanan | Mobile: Modal Pop-up penuh) -->
-            <div id="desktop-cart-panel" class="hidden md:flex w-96 bg-slate-900 flex-col flex-none border-l border-slate-800 absolute md:relative inset-y-0 right-0 z-40 w-full md:w-96 transition-transform">
+            <!-- Cart Panel (Desktop: Sidebar | Mobile: Fullscreen Modal) -->
+            <div id="desktop-cart-panel" class="hidden md:flex bg-slate-900 flex-col flex-none border-l border-slate-800 absolute md:relative inset-0 md:inset-auto md:w-96 z-40 transition-transform">
                 <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-basket-shopping text-brand-500"></i>
@@ -170,7 +170,6 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <button onclick="clearCart()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold"><i class="fa-solid fa-trash-can"></i> Reset</button>
-                        <!-- Tombol Close khusus tampilan modal HP -->
                         <button onclick="toggleMobileCartModal(false)" class="md:hidden text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>
@@ -206,7 +205,7 @@
             </div>
         </div>
 
-        <!-- VIEW 2: KATALOG PRODUK (MANAJEMEN HPP ADVANCED CRUD) -->
+        <!-- VIEW 2: KATALOG PRODUK CRUD -->
         <div id="view-katalog" class="hidden flex-1 overflow-y-auto p-6 space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
                 <div>
@@ -218,7 +217,6 @@
                 </button>
             </div>
 
-            <!-- Table katalog -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto shadow-xl">
                 <table class="w-full text-left text-xs text-slate-300">
                     <thead class="bg-slate-800/80 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-700">
@@ -240,7 +238,7 @@
             </div>
         </div>
 
-        <!-- VIEW 3: LAPORAN & MARGIN ANALYTICS -->
+        <!-- VIEW 3: LAPORAN & MARGIN -->
         <div id="view-laporan" class="hidden flex-1 overflow-y-auto p-6 space-y-6">
             <div class="flex justify-between items-center border-b border-slate-800 pb-4">
                 <div>
@@ -271,7 +269,6 @@
                 </div>
             </div>
 
-            <!-- Transaction History Table -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
                 <h3 class="font-bold text-white text-sm">Riwayat Transaksi Penjualan</h3>
                 <div class="overflow-x-auto">
@@ -306,7 +303,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="users-card-container"></div>
         </div>
 
-        <!-- VIEW 5: PROFIL & PENGATURAN CAFE -->
+        <!-- VIEW 5: PENGATURAN -->
         <div id="view-settings" class="hidden flex-1 overflow-y-auto p-6 space-y-6">
             <div class="border-b border-slate-800 pb-4">
                 <h2 class="text-xl font-display font-bold text-white">Profil Cafe & Pengaturan Sistem</h2>
@@ -368,7 +365,7 @@
         </div>
     </div>
 
-    <!-- MODAL PRODUK CRUD (TAMBAH/EDIT) -->
+    <!-- MODAL PRODUK CRUD -->
     <div id="modal-product-crud" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -410,7 +407,7 @@
                         <input type="text" id="crud-prod-unit" placeholder="Cup / Porsi" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-400 mb-1">Stok Bahan/Stok</label>
+                        <label class="block font-bold text-slate-400 mb-1">Stok</label>
                         <input type="number" id="crud-prod-stock" value="100" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
                     </div>
                     <div>
@@ -419,7 +416,6 @@
                     </div>
                 </div>
 
-                <!-- Section Details HPP -->
                 <div class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-3">
                     <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Kalkulasi HPP</span>
                     <div class="grid grid-cols-2 gap-2">
@@ -434,15 +430,14 @@
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-slate-400 mb-1">HPP Kemasan (Gelas/Lid/Box)</label>
+                            <label class="block text-slate-400 mb-1">HPP Kemasan</label>
                             <input type="number" id="crud-hpp-pack" value="800" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
                         </div>
                         <div>
-                            <label class="block text-slate-400 mb-1">Biaya Operasional (Es/Listrik)</label>
+                            <label class="block text-slate-400 mb-1">Biaya Operasional</label>
                             <input type="number" id="crud-hpp-ops" value="1500" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
                         </div>
                     </div>
-
                     <div class="pt-2 border-t border-slate-700 flex justify-between font-bold text-slate-200">
                         <span>TOTAL ESTIMASI HPP:</span>
                         <span id="crud-total-hpp-preview" class="text-brand-400">Rp 0</span>
@@ -486,7 +481,7 @@
         </div>
     </div>
 
-    <!-- MODAL VARIATION SELECTION FOR JUICE & COFFEE -->
+    <!-- MODAL VARIATION SELECTION -->
     <div id="modal-variation" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -534,7 +529,6 @@
 
     <!-- JAVASCRIPT LOGIC ENGINE -->
     <script>
-        // GLOBAL DATA INITIALIZATION
         let currentRole = 'ADMIN';
         let currentActiveCategory = 'all';
         let pendingViewDestination = null;
@@ -554,28 +548,18 @@
             { id: 2, name: "Kasir Shift 1", role: "KASIR", pin: "0000" }
         ]));
 
-        // INITIAL PRESET PRODUCTS WITH ADVANCED HPP & UNSPLASH PHOTO LINKS
         let products = JSON.parse(localStorage.getItem('jt_products') || JSON.stringify([
-            // ICE JUICE (Variasi Gelas: 12oz 5k, 16oz 8k, 18oz 10k)
             { id: 101, category: 'juice', name: 'Jus Alpukat', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', price: 5000 }, { size: '16 oz', price: 8000 }, { size: '18 oz', price: 10000 }], img: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&q=80', hppKg: 30000, grams: 120, packCost: 800, opsCost: 1500, price: 8000 },
             { id: 102, category: 'juice', name: 'Jus Mangga', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', price: 5000 }, { size: '16 oz', price: 8000 }, { size: '18 oz', price: 10000 }], img: 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=400&q=80', hppKg: 25000, grams: 110, packCost: 800, opsCost: 1500, price: 8000 },
             { id: 103, category: 'juice', name: 'Jus Strawberry', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', price: 5000 }, { size: '16 oz', price: 8000 }, { size: '18 oz', price: 10000 }], img: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=400&q=80', hppKg: 40000, grams: 90, packCost: 800, opsCost: 1500, price: 8000 },
-            
-            // ICE COFFEE (Variasi Gelas: 12oz 5k, 16oz 8k, 18oz 10k)
             { id: 201, category: 'coffee', name: 'CAFFE LATTE', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', price: 5000 }, { size: '16 oz', price: 8000 }, { size: '18 oz', price: 10000 }], img: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80', hppKg: 150000, grams: 18, packCost: 800, opsCost: 1200, price: 8000 },
             { id: 202, category: 'coffee', name: 'AMERICANO AREN', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', price: 5000 }, { size: '16 oz', price: 8000 }, { size: '18 oz', price: 10000 }], img: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80', hppKg: 140000, grams: 18, packCost: 800, opsCost: 1200, price: 8000 },
-            
-            // ICE TEA (18 oz)
             { id: 301, category: 'tea', name: 'Original Tea', unit: 'Cup', stock: 150, size: '18 oz', price: 3000, img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80', hppKg: 50000, grams: 5, packCost: 700, opsCost: 500, price: 3000 },
             { id: 302, category: 'tea', name: 'Lemon Tea', unit: 'Cup', stock: 150, size: '18 oz', price: 5000, img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80', hppKg: 60000, grams: 10, packCost: 700, opsCost: 700, price: 5000 },
             { id: 303, category: 'tea', name: 'Matcha Tea', unit: 'Cup', stock: 100, size: '18 oz', price: 8000, img: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=400&q=80', hppKg: 180000, grams: 15, packCost: 800, opsCost: 1000, price: 8000 },
-
-            // POP ICE & MILKY
             { id: 401, category: 'popice', name: 'Pop Ice Chocolate', unit: 'Cup', stock: 200, size: '12 oz', price: 3000, img: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80', hppKg: 40000, grams: 25, packCost: 600, opsCost: 500, price: 3000 },
             { id: 501, category: 'popice_milky', name: 'Pop Ice Milky Strawberry', unit: 'Cup', stock: 200, size: '16 oz', price: 5000, img: 'https://images.unsplash.com/photo-1528740561666-dc2479dc08ab?auto=format&fit=crop&w=400&q=80', hppKg: 50000, grams: 30, packCost: 800, opsCost: 700, price: 5000 },
             { id: 601, category: 'milky', name: 'Milo Milky', unit: 'Cup', stock: 120, size: '16 oz', price: 6000, img: 'https://images.unsplash.com/photo-1541658016709-82535e94bc69?auto=format&fit=crop&w=400&q=80', hppKg: 70000, grams: 35, packCost: 800, opsCost: 800, price: 6000 },
-
-            // FOOD & SNACKS
             { id: 701, category: 'food', name: 'Roti Bakar Coklat Keju', unit: 'Porsi', stock: 50, price: 12000, img: 'https://images.unsplash.com/photo-1584776296944-ab6fb57b0bdd?auto=format&fit=crop&w=400&q=80', hppKg: 40000, grams: 100, packCost: 1000, opsCost: 1500, price: 12000 },
             { id: 702, category: 'food', name: 'Dimsum Ayam (4 pcs)', unit: 'Porsi', stock: 40, price: 15000, img: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=400&q=80', hppKg: 60000, grams: 120, packCost: 1200, opsCost: 1800, price: 15000 },
             { id: 801, category: 'snack', name: 'Kentang Goreng Original', unit: 'Pack', stock: 60, price: 10000, img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=400&q=80', hppKg: 30000, grams: 150, packCost: 800, opsCost: 1200, price: 10000 }
@@ -618,13 +602,10 @@
 
         function updateTime() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('id-ID') + ' WIB';
-            const dateStr = now.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-            document.getElementById('sidebar-time').innerText = timeStr;
-            document.getElementById('sidebar-date').innerText = dateStr;
+            document.getElementById('sidebar-time').innerText = now.toLocaleTimeString('id-ID') + ' WIB';
+            document.getElementById('sidebar-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
         }
 
-        // --- AUTH & SWITCHING ---
         function checkAdminAuth(destView) {
             if (currentRole === 'ADMIN') {
                 switchView(destView);
@@ -675,7 +656,17 @@
             if (view === 'settings') loadSettingsView();
         }
 
-        // --- POS KASIR ENGINE ---
+        function toggleMobileCartModal(open) {
+            const panel = document.getElementById('desktop-cart-panel');
+            if (open) {
+                panel.classList.remove('hidden');
+                panel.classList.add('flex', 'fixed', 'inset-0', 'z-50');
+            } else {
+                panel.classList.add('hidden');
+                panel.classList.remove('flex', 'fixed', 'inset-0', 'z-50');
+            }
+        }
+
         function renderPosCategories() {
             const container = document.getElementById('pos-category-pills');
             container.innerHTML = CATEGORIES.map(c => `
@@ -770,97 +761,12 @@
 
         function renderCart() {
             const container = document.getElementById('pos-cart-container');
-            document.getElementById('pos-cart-badge').innerText = cart.reduce((s, i) => s + i.qty, 0);
-
-            if (cart.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-slate-500 my-8">Keranjang kosong.</p>`;
-                updatePosSummary(0);
-                return;
-            }
-
-            container.innerHTML = cart.map(i => `
-                <div class="p-2 bg-slate-800/60 border border-slate-700 rounded-xl flex items-center gap-2">
-                    <img src="${i.img}" class="w-8 h-8 rounded-lg object-cover">
-                    <div class="flex-1 min-w-0">
-                        <h5 class="font-bold text-white text-xs truncate">${i.name}</h5>
-                        <p class="text-[10px] text-brand-400 font-semibold">${formatIDR(i.price)}</p>
-                    </div>
-                    <div class="flex items-center gap-1 bg-slate-900 px-1.5 py-0.5 rounded-lg">
-                        <button onclick="updateCartQty('${i.name}', -1)" class="text-slate-400 hover:text-rose-400 text-xs font-bold">-</button>
-                        <span class="text-xs font-bold text-white w-4 text-center">${i.qty}</span>
-                        <button onclick="updateCartQty('${i.name}', 1)" class="text-slate-400 hover:text-brand-400 text-xs font-bold">+</button>
-                    </div>
-                </div>
-            `).join('');
-
-            const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-            updatePosSummary(subtotal);
-        }
-
-        function updatePosSummary(subtotal) {
-            const tax = Math.round(subtotal * (settings.taxRate / 100));
-            const total = subtotal + tax;
-            document.getElementById('pos-subtotal').innerText = formatIDR(subtotal);
-            document.getElementById('pos-tax').innerText = formatIDR(tax);
-            document.getElementById('pos-total').innerText = formatIDR(total);
-            document.getElementById('btn-checkout').disabled = cart.length === 0;
-            calculateChange();
-        }
-
-        function selectPaymentMethod(m) {
-            selectedPaymentMethod = m;
-            document.querySelectorAll('.pay-btn').forEach(b => b.className = "pay-btn p-2 border border-slate-700 rounded-xl text-center text-xs text-slate-400 hover:bg-slate-800");
-            document.getElementById(`pay-btn-${m}`).className = "pay-btn p-2 border rounded-xl text-center text-xs font-bold bg-brand-500/20 border-brand-500 text-brand-400";
-            document.getElementById('cash-area').style.display = m === 'cash' ? 'block' : 'none';
-        }
-
-        function calculateChange() {
-            const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-            const total = subtotal + Math.round(subtotal * (settings.taxRate / 100));
-            const input = parseFloat(document.getElementById('cash-input').value) || 0;
-            const diff = input - total;
-
-            const preview = document.getElementById('cash-change-preview');
-            if (diff >= 0) {
-                preview.innerText = `Kembali: ${formatIDR(diff)}`;
-                preview.className = "font-bold text-brand-400";
-            } else {
-                preview.innerText = `Kurang: ${formatIDR(Math.abs(diff))}`;
-                preview.className = "font-bold text-rose-400";
-            }
-        }
-
-        function processCheckout() {
-    const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    const tax = Math.round(subtotal * (settings.taxRate / 100));
-    const total = subtotal + tax;
-    let paid = total;
-
-    if (selectedPaymentMethod === 'cash') {
-        paid = parseFloat(document.getElementById('cash-input').value) || 0;
-        if (paid < total) { alert('Nominal uang belum cukup!'); return; }
-    }
-
-    const trx = {
-        id: 'TRX-' + Math.floor(100000 + Math.random() * 900000),
-        date: new Date().toLocaleString('id-ID'),
-        items: [...cart],
-        subtotal, tax, total, paid, change: paid - total,
-        method: selectedPaymentMethod
-    };
-
-    // 1. Simpan ke Local Storage
-    transactions.unshift(trx);
-    localStorage.setItem('jt_trx', JSON.stringify(transactions));function renderCart() {
-            const container = document.getElementById('pos-cart-container');
             const badgeEls = document.querySelectorAll('#pos-cart-badge');
             badgeEls.forEach(el => el.innerText = cart.reduce((s, i) => s + i.qty, 0));
 
             if (cart.length === 0) {
                 container.innerHTML = `<p class="text-center text-xs text-slate-500 my-8">Keranjang kosong.</p>`;
                 updatePosSummary(0);
-                
-                // Tambahan: Sembunyikan floating bar dan tutup modal di HP jika keranjang kosong
                 const mobileBar = document.getElementById('mobile-cart-bar');
                 if (mobileBar) mobileBar.classList.add('hidden');
                 toggleMobileCartModal(false);
@@ -885,13 +791,18 @@
             const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
             updatePosSummary(subtotal);
 
-            // Tambahan: Munculkan & update floating bar di HP saat ada isi keranjang
             const totalQty = cart.reduce((s, i) => s + i.qty, 0);
             const mobileBar = document.getElementById('mobile-cart-bar');
             if (mobileBar) {
                 document.getElementById('mobile-cart-badge').innerText = totalQty;
                 document.getElementById('mobile-cart-total').innerText = formatIDR(subtotal + Math.round(subtotal * (settings.taxRate / 100)));
-                mobileBar.classList.remove('hidden');
+
+                if (cart.length > 0) {
+                    mobileBar.classList.remove('hidden');
+                } else {
+                    mobileBar.classList.add('hidden');
+                    toggleMobileCartModal(false);
+                }
             }
         }
 
@@ -947,11 +858,9 @@
                 method: selectedPaymentMethod
             };
 
-            // 1. Simpan ke Local Storage
             transactions.unshift(trx);
             localStorage.setItem('jt_trx', JSON.stringify(transactions));
 
-            // 2. Kirim ke Google Sheets via SCRIPT_URL
             if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
                 fetch(SCRIPT_URL, {
                     method: 'POST',
@@ -963,7 +872,6 @@
                 .catch(err => console.log('Sync Google Sheets Error:', err));
             }
 
-            // 3. Tampilkan struk, reset cart, dan tutup modal keranjang HP
             showReceiptModal(trx);
             cart = [];
             document.getElementById('cash-input').value = '';
@@ -996,7 +904,6 @@
 
         function closeReceiptModal() { document.getElementById('modal-receipt').classList.add('hidden'); }
 
-        // --- KATALOG CRUD & HPP TABLE ---
         function renderCatalogTable() {
             const tbody = document.getElementById('catalog-table-body');
             tbody.innerHTML = products.map(p => {
@@ -1109,10 +1016,9 @@
             }
         }
 
-        // --- LAPORAN & USER MANAGEMENT ---
         function renderLaporanView() {
             const omzet = transactions.reduce((s, t) => s + t.total, 0);
-            const estHpp = transactions.reduce((s, t) => s + Math.round(t.subtotal * 0.45), 0); // ~45% HPP Estimasi
+            const estHpp = transactions.reduce((s, t) => s + Math.round(t.subtotal * 0.45), 0);
             const estProfit = omzet - estHpp;
 
             document.getElementById('rep-omzet').innerText = formatIDR(omzet);
@@ -1169,7 +1075,6 @@
             renderUsersView();
         }
 
-        // --- PROFIL & SETTINGS ---
         function loadSettingsView() {
             document.getElementById('set-cafe-name').value = settings.cafeName;
             document.getElementById('set-cafe-address').value = settings.cafeAddress;
@@ -1198,16 +1103,6 @@
             a.download = `JUICE_TRUE_Backup_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
         }
-		function toggleMobileCartModal(open) {
-    const panel = document.getElementById('desktop-cart-panel');
-    if (open) {
-        panel.classList.remove('hidden');
-        panel.classList.add('flex', 'fixed', 'inset-0', 'z-50');
-    } else {
-        panel.classList.add('hidden');
-        panel.classList.remove('flex', 'fixed', 'inset-0', 'z-50');
-    }
-}
     </script>
 </body>
 </html>
