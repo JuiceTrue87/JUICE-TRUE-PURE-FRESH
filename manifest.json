@@ -1,0 +1,15 @@
+{
+  "name": "JUICE TRUE POS",
+  "short_name": "JUICE TRUE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#22c55e",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/JuiceTrue87/JUICE-TRUE-PURE-FRESH/refs/heads/main/LOGO%20JUICE%20TRUE%20512%20X%20512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
