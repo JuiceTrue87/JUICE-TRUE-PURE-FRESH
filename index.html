@@ -60,14 +60,14 @@
                 left: 0; 
                 top: 0; 
                 width: 100% !important; 
-                max-width: 58mm !important; /* Sesuaikan dengan 58mm atau 80mm printer Anda */
+                max-width: 58mm !important; /* Sesuaikan 80mm jika printer Anda 80mm */
                 color: #000 !important; 
                 padding: 0 !important;
                 margin: 0 !important;
-                font-size: 12px !important; /* Ukuran font lebih pas untuk termal */
+                font-size: 11px !important;
             }
             @page {
-                size: auto;
+                size: 58mm auto; /* Memaksa tinggi halaman otomatis mengikuti panjang struk */
                 margin: 0mm;
             }
         }
