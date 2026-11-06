@@ -424,10 +424,23 @@
                         <input type="number" id="crud-prod-stock" value="100" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-400 mb-1">Harga Jual (Rp)</label>
-                        <input type="number" id="crud-prod-price" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
+                        <label class="block font-bold text-slate-400 mb-1">Harga Jual Dasar (Rp)</label>
+                        <input type="number" id="crud-prod-price" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white" placeholder="Contoh: 8000">
                     </div>
                 </div>
+
+                <!-- ✨ TAMBAHAN: Pilihan Variasi Ukuran Ganda (Untuk Ice Juice / Ice Coffee) -->
+                <div class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="block font-bold text-brand-400 text-xs uppercase">Variasi Ukuran & Harga (Opsional)</span>
+                        <button type="button" onclick="addVariationRow()" class="text-[10px] bg-brand-500 text-white px-2.5 py-1 rounded-lg font-bold shadow hover:bg-brand-600 transition">+ Tambah Ukuran</button>
+                    </div>
+                    <p class="text-[10px] text-slate-400">Kosongkan jika produk hanya memiliki satu harga (tanpa pilihan ukuran).</p>
+                    <div id="variation-inputs-container" class="space-y-2">
+                        <!-- Baris variasi ukuran dinamis akan muncul di sini -->
+                    </div>
+                </div>
+
                 <div class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-3">
                     <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Kalkulasi HPP</span>
                     <div class="grid grid-cols-2 gap-2">
@@ -1198,6 +1211,17 @@
             a.download = `JUICE_TRUE_Backup_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
         }
+        function addVariationRow(size = '', price = '') {
+    const container = document.getElementById('variation-inputs-container');
+    const div = document.createElement('div');
+    div.className = "flex gap-2 items-center var-row";
+    div.innerHTML = `
+        <input type="text" placeholder="Ukuran (Cth: 16 oz)" value="${size}" class="var-size flex-1 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        <input type="number" placeholder="Harga (Rp)" value="${price}" class="var-price flex-1 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 px-2 py-1"><i class="fa-solid fa-trash"></i></button>
+    `;
+    container.appendChild(div);
+}
     </script>
 </body>
 </html>
