@@ -606,6 +606,23 @@
             updateTime();
             setInterval(updateTime, 1000);
             document.getElementById('label-tax-rate').innerText = settings.taxRate;
+
+            // Sinkronisasi data dari Google Sheets saat aplikasi pertama dibuka
+            if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getTransactions' })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if(res.status === 'success' && res.data) {
+                        transactions = res.data;
+                        localStorage.setItem('jt_trx', JSON.stringify(transactions));
+                    }
+                })
+                .catch(err => console.log('Sinkronisasi awal dilewati:', err));
+            }
         };
 
         function showToast(msg) {
@@ -1122,11 +1139,24 @@ function clearAllTransactions() {
                 return;
             }
 
-            if (confirm('Apakah Anda yakin ingin menghapus SELURUH riwayat transaksi penjualan di aplikasi ini?\n\nCatatan: Data yang sudah terlanjur terkirim ke Google Sheets tidak akan terhapus otomatis.')) {
+            if (confirm('Hapus SELURUH riwayat transaksi? Data akan terhapus di perangkat ini dan juga di Google Spreadsheet.')) {
+                // 1. Bersihkan data lokal di browser
                 transactions = [];
                 localStorage.removeItem('jt_trx');
                 renderLaporanView();
-                showToast('Seluruh riwayat transaksi berhasil di-reset!');
+                showToast('Riwayat lokal berhasil di-reset!');
+
+                // 2. Kirim perintah kosongkan data ke Google Spreadsheet (Cloud)
+                if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'clearTransactions' })
+                    })
+                    .then(res => res.json())
+                    .then(res => console.log('Spreadsheet berhasil dibersihkan:', res))
+                    .catch(err => console.log('Gagal sinkron cloud:', err));
+                }
             }
         }
         function exportData() {
