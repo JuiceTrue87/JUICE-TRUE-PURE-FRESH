@@ -1222,6 +1222,156 @@
     `;
     container.appendChild(div);
 }
+        // ==========================================
+        // FITUR KALKULASI HPP & VARIASI UKURAN (12oz, 16oz, 18oz)
+        // ==========================================
+
+        // Kalkulasi HPP otomatis per variasi (Bahan + Biaya Ops Tetap Rp 1.460)
+        function calculateVariationHpp(hppPerKg, grams, opsCost = 1460) {
+            const hppBahan = (hppPerKg / 1000) * grams;
+            const totalHpp = hppBahan + opsCost;
+            return Math.round(totalHpp);
+        }
+
+        // Tambah baris input variasi ukuran dinamis pada Modal CRUD Produk
+        function addVariationRow(size = '', grams = '', hppPerKg = 60000, price = '') {
+            const container = document.getElementById('variation-inputs-container');
+            if (!container) return;
+            
+            const div = document.createElement('div');
+            div.className = "grid grid-cols-4 gap-2 items-center var-row bg-slate-900/50 p-2 rounded-xl border border-slate-700";
+            div.innerHTML = `
+                <input type="text" placeholder="Ukuran (Cth: 12 oz)" value="${size}" class="var-size px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+                <input type="number" placeholder="Takaran (g)" value="${grams}" class="var-grams px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+                <input type="number" placeholder="Harga Jual (Rp)" value="${price}" class="var-price px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 py-1.5 text-center font-bold"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Modifikasi fungsi saveProductForm agar mendukung penyimpanan variasi ukuran
+        const originalSaveProductForm = typeof saveProductForm === 'function' ? saveProductForm : null;
+        
+        saveProductForm = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('crud-prod-id').value;
+            
+            // Kumpulkan data variasi jika ada
+            const variationRows = document.querySelectorAll('.var-row');
+            let variations = [];
+            let hasVariations = false;
+
+            if (variationRows.length > 0) {
+                variationRows.forEach(row => {
+                    const size = row.querySelector('.var-size').value;
+                    const grams = parseFloat(row.querySelector('.var-grams').value) || 0;
+                    const price = parseFloat(row.querySelector('.var-price').value) || 0;
+                    if (size && price) {
+                        variations.push({
+                            size: size,
+                            grams: grams,
+                            hppPerKg: parseFloat(document.getElementById('crud-hpp-per-kg').value) || 60000,
+                            price: price
+                        });
+                    }
+                });
+                if (variations.length > 0) hasVariations = true;
+            }
+
+            const prodData = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('crud-prod-name').value,
+                category: document.getElementById('crud-prod-cat').value,
+                img: document.getElementById('crud-prod-img').value,
+                unit: document.getElementById('crud-prod-unit').value,
+                stock: parseInt(document.getElementById('crud-prod-stock').value) || 100,
+                price: parseFloat(document.getElementById('crud-prod-price').value) || (hasVariations ? variations[0].price : 0),
+                hppBahan: parseFloat(document.getElementById('crud-hpp-grams').value) || 0,
+                hppKemasan: 1460, // Biaya operasional + kemasan tetap
+                opsCost: 1460,
+                hasVariations: hasVariations,
+                variations: hasVariations ? variations : []
+            };
+
+            if (id) {
+                const idx = products.findIndex(p => p.id === parseInt(id));
+                if (idx !== -1) products[idx] = { ...products[idx], ...prodData };
+            } else {
+                products.push(prodData);
+            }
+
+            // Simpan ke local storage
+            localStorage.setItem('jt_products', JSON.stringify(products));
+            if (typeof showToast === 'function') showToast('Produk Berhasil Disimpan!');
+            if (typeof closeProductModal === 'function') closeProductModal();
+            if (typeof renderCatalogTable === 'function') renderCatalogTable();
+            if (typeof renderPosProducts === 'function') renderPosProducts();
+
+            // Sinkron ke Google Spreadsheet (Cloud)
+            if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'saveProduct', product: prodData })
+                })
+                .then(res => res.json())
+                .then(res => console.log('Produk disinkron ke spreadsheet:', res))
+                .catch(err => console.log('Gagal sinkron produk:', err));
+            }
+        };
+
+        // Penanganan klik produk di POS untuk menampilkan pilihan ukuran jika ada variasi
+        function handleProductClick(product) {
+            if (product.hasVariations && product.variations && product.variations.length > 0) {
+                openVariationModal(product);
+            } else {
+                if (typeof addToCart === 'function') addToCart(product);
+            }
+        }
+
+        function openVariationModal(product) {
+            const container = document.getElementById('var-options-container');
+            const titleEl = document.getElementById('var-title');
+            if (!container || !titleEl) return;
+
+            titleEl.innerText = `Pilih Ukuran - ${product.name}`;
+            container.innerHTML = '';
+
+            product.variations.forEach(v => {
+                const totalHpp = calculateVariationHpp(v.hppPerKg || 60000, v.grams, product.opsCost || 1460);
+                const profit = v.price - totalHpp;
+                const margin = ((profit / v.price) * 100).toFixed(1);
+
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.className = "w-full p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl flex justify-between items-center text-left transition";
+                btn.innerHTML = `
+                    <div>
+                        <div class="font-bold text-white text-sm">${v.size} (${v.grams}g)</div>
+                        <div class="text-[10px] text-slate-400">HPP: Rp ${totalHpp.toLocaleString('id-ID')} | Margin: ${margin}%</div>
+                    </div>
+                    <div class="text-brand-400 font-bold text-sm">Rp ${v.price.toLocaleString('id-ID')}</div>
+                `;
+                btn.onclick = () => {
+                    if (typeof addToCartWithVariation === 'function') {
+                        addToCartWithVariation(product, v, totalHpp);
+                    } else if (typeof addToCart === 'function') {
+                        // Fallback jika fungsi khusus variasi belum ada
+                        addToCart({ ...product, price: v.price, name: `${product.name} (${v.size})` });
+                    }
+                    closeVariationModal();
+                };
+                container.appendChild(btn);
+            });
+
+            const modalVar = document.getElementById('modal-variation');
+            if (modalVar) modalVar.classList.remove('hidden');
+        }
+
+        function closeVariationModal() {
+            const modalVar = document.getElementById('modal-variation');
+            if (modalVar) modalVar.classList.add('hidden');
+        }
     </script>
 </body>
 </html>
