@@ -443,23 +443,17 @@
                     <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Kalkulasi HPP</span>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-slate-400 mb-1">HPP per Kg/Liter Bahan (Rp)</label>
+                            <label class="block font-slate-400 mb-1">HPP per Kg/Liter Bahan (Rp)</label>
                             <input type="number" id="crud-hpp-per-kg" value="60000" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
                         </div>
                         <div>
-                            <label class="block text-slate-400 mb-1">Takaran Bahan (g/ml)</label>
+                            <label class="block font-slate-400 mb-1">Takaran Bahan (g/ml)</label>
                             <input type="number" id="crud-hpp-grams" value="20" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-slate-400 mb-1">HPP Kemasan</label>
-                            <input type="number" id="crud-hpp-pack" value="800" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 mb-1">Biaya Operasional (Tetap)</label>
-                            <input type="number" id="crud-hpp-ops" value="1460" readonly class="w-full px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-slate-400 cursor-not-allowed">
-                        </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Biaya Ops & Kemasan (Tetap)</label>
+                        <input type="number" id="crud-hpp-ops" value="1460" readonly class="w-full px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-brand-400 font-bold cursor-not-allowed">
                     </div>
                     <div class="pt-2 border-t border-slate-700 flex justify-between font-bold text-slate-200">
                         <span>TOTAL ESTIMASI HPP:</span>
@@ -570,10 +564,10 @@
         ]));
 
         let products = JSON.parse(localStorage.getItem('jt_products') || JSON.stringify([
-            { id: 101, category: 'juice', name: 'Jus Alpukat', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', grams: 20, hppPerKg: 60000, price: 5000 }, { size: '16 oz', grams: 35, hppPerKg: 60000, price: 8000 }, { size: '18 oz', grams: 50, hppPerKg: 60000, price: 10000 }], img: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&q=80', hppKg: 60000, grams: 20, packCost: 800, opsCost: 1460, price: 5000 },
-            { id: 102, category: 'juice', name: 'Jus Mangga', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', grams: 20, hppPerKg: 50000, price: 5000 }, { size: '16 oz', grams: 35, hppPerKg: 50000, price: 8000 }, { size: '18 oz', grams: 50, hppPerKg: 50000, price: 10000 }], img: 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=400&q=80', hppKg: 50000, grams: 20, packCost: 800, opsCost: 1460, price: 5000 },
-            { id: 201, category: 'coffee', name: 'CAFFE LATTE', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', grams: 15, hppPerKg: 150000, price: 5000 }, { size: '16 oz', grams: 25, hppPerKg: 150000, price: 8000 }, { size: '18 oz', grams: 35, hppPerKg: 150000, price: 10000 }], img: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80', hppKg: 150000, grams: 15, packCost: 800, opsCost: 1460, price: 5000 },
-            { id: 301, category: 'tea', name: 'Original Tea', unit: 'Cup', stock: 150, price: 3000, img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80', hppKg: 50000, grams: 5, packCost: 700, opsCost: 1460 }
+            { id: 101, category: 'juice', name: 'Jus Alpukat', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', grams: 20, hppPerKg: 60000, price: 5000 }, { size: '16 oz', grams: 35, hppPerKg: 60000, price: 8000 }, { size: '18 oz', grams: 50, hppPerKg: 60000, price: 10000 }], img: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&q=80', hppKg: 60000, grams: 20, opsKemasan: 1460, price: 5000 },
+            { id: 102, category: 'juice', name: 'Jus Mangga', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', grams: 20, hppPerKg: 50000, price: 5000 }, { size: '16 oz', grams: 35, hppPerKg: 50000, price: 8000 }, { size: '18 oz', grams: 50, hppPerKg: 50000, price: 10000 }], img: 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=400&q=80', hppKg: 50000, grams: 20, opsKemasan: 1460, price: 5000 },
+            { id: 201, category: 'coffee', name: 'CAFFE LATTE', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', grams: 15, hppPerKg: 150000, price: 5000 }, { size: '16 oz', grams: 25, hppPerKg: 150000, price: 8000 }, { size: '18 oz', grams: 35, hppPerKg: 150000, price: 10000 }], img: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80', hppKg: 150000, grams: 15, opsKemasan: 1460, price: 5000 },
+            { id: 301, category: 'tea', name: 'Original Tea', unit: 'Cup', stock: 150, price: 3000, img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80', hppKg: 50000, grams: 5, opsKemasan: 1460 }
         ]));
 
         let transactions = JSON.parse(localStorage.getItem('jt_trx') || '[]');
@@ -775,7 +769,7 @@
                 document.getElementById('var-options-container').innerHTML = prod.variations.map(v => {
                     const hppKg = v.hppPerKg || prod.hppKg || 60000;
                     const grams = v.grams || 20;
-                    const totalHpp = Math.round((hppKg / 1000) * grams) + 1460;
+                    const totalHpp = Math.round((hppKg / 1000) * grams) + 1460; // Biaya ops + kemasan tetap 1460
                     const margin = (((v.price - totalHpp) / v.price) * 100).toFixed(1);
 
                     return `
@@ -950,7 +944,6 @@
             document.getElementById('rec-change').innerText = formatIDR(trx.change);
             document.getElementById('rec-footer').innerText = settings.receiptFooter;
 
-            document.getElementById('rec-items-list').innerText = '';
             document.getElementById('rec-items-list').innerHTML = trx.items.map(i => `
                 <div class="flex justify-between">
                     <div><div>${i.name}</div><div class="text-[9px] text-slate-500">${i.qty} x ${formatIDR(i.price)}</div></div>
@@ -997,8 +990,6 @@
                 document.getElementById('crud-prod-price').value = prod.price;
                 document.getElementById('crud-hpp-per-kg').value = prod.hppKg || 60000;
                 document.getElementById('crud-hpp-grams').value = prod.grams || 20;
-                document.getElementById('crud-hpp-pack').value = prod.packCost || 800;
-                document.getElementById('crud-hpp-ops').value = prod.opsCost || 1460;
 
                 if (prod.hasVariations && prod.variations && prod.variations.length > 0) {
                     prod.variations.forEach(v => {
@@ -1011,8 +1002,6 @@
                 document.getElementById('crud-prod-id').value = '';
                 document.getElementById('crud-hpp-per-kg').value = 60000;
                 document.getElementById('crud-hpp-grams').value = 20;
-                document.getElementById('crud-hpp-pack').value = 800;
-                document.getElementById('crud-hpp-ops').value = 1460;
 
                 // Tambahkan 3 variasi default untuk Ice Juice / Ice Coffee
                 addVariationRow('12 oz', '20', '5000');
@@ -1028,9 +1017,8 @@
         function calcHppForm() {
             const kg = parseFloat(document.getElementById('crud-hpp-per-kg').value) || 0;
             const grams = parseFloat(document.getElementById('crud-hpp-grams').value) || 0;
-            const pack = parseFloat(document.getElementById('crud-hpp-pack').value) || 0;
-            const ops = parseFloat(document.getElementById('crud-hpp-ops').value) || 1460;
-            const total = Math.round((kg / 1000) * grams) + pack + ops;
+            const opsKemasan = 1460; // Biaya operasional + kemasan disatukan tetap
+            const total = Math.round((kg / 1000) * grams) + opsKemasan;
             document.getElementById('crud-total-hpp-preview').innerText = formatIDR(total);
         }
 
@@ -1065,8 +1053,7 @@
                 price: parseFloat(document.getElementById('crud-prod-price').value) || (hasVariations ? variations[0].price : 0),
                 hppKg: hppKg,
                 grams: parseFloat(document.getElementById('crud-hpp-grams').value) || 0,
-                packCost: parseFloat(document.getElementById('crud-hpp-pack').value) || 800,
-                opsCost: 1460, // Biaya operasional tetap
+                opsKemasan: 1460, // Biaya operasional & kemasan jadi satu
                 hasVariations: hasVariations,
                 variations: hasVariations ? variations : []
             };
@@ -1115,9 +1102,8 @@
             if (!tbody) return;
             tbody.innerHTML = products.map(p => {
                 const hppBahan = Math.round(((p.hppKg || 60000) / 1000) * (p.grams || 20));
-                const opsCost = p.opsCost || 1460;
-                const packCost = p.packCost || 800;
-                const totalHpp = hppBahan + packCost + opsCost;
+                const opsKemasan = p.opsKemasan || 1460;
+                const totalHpp = hppBahan + opsKemasan;
                 const price = p.hasVariations ? p.variations[0].price : p.price;
                 const profit = price - totalHpp;
                 const margin = ((profit / price) * 100).toFixed(1);
@@ -1130,8 +1116,7 @@
                         </td>
                         <td class="p-3.5 uppercase font-bold text-[10px] text-brand-400">${p.category}</td>
                         <td class="p-3.5">${formatIDR(hppBahan)}</td>
-                        <td class="p-3.5">${formatIDR(packCost)}</td>
-                        <td class="p-3.5">${formatIDR(opsCost)}</td>
+                        <td class="p-3.5" colspan="2">${formatIDR(opsKemasan)} <span class="text-[9px] text-slate-400">(Ops+Kemasan)</span></td>
                         <td class="p-3.5 font-bold text-amber-400">${formatIDR(totalHpp)}</td>
                         <td class="p-3.5 font-bold text-white">${formatIDR(price)}</td>
                         <td class="p-3.5 font-bold ${profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatIDR(profit)}</td>
