@@ -628,6 +628,21 @@
                     }
                 })
                 .catch(err => console.log('Gagal sinkron transaksi:', err));
+
+                // 3. ✨ TAMBAHAN: Tarik Daftar Produk terbaru dari Spreadsheet (Cloud)
+                fetch(SCRIPT_URL)
+                .then(res => res.json())
+                .then(cloudProducts => {
+                    if (Array.isArray(cloudProducts) && cloudProducts.length > 0) {
+                        products = cloudProducts;
+                        localStorage.setItem('jt_products', JSON.stringify(products));
+                        renderPosProducts();
+                        if(document.getElementById('view-katalog') && !document.getElementById('view-katalog').classList.contains('hidden')) {
+                            renderCatalogTable();
+                        }
+                    }
+                })
+                .catch(err => console.log('Gagal sinkron produk:', err));
             }
         };
 
