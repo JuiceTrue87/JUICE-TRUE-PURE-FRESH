@@ -254,16 +254,21 @@
             </div>
         </div>
 
-        <!-- VIEW 3: LAPORAN & MARGIN -->
+<!-- VIEW 3: LAPORAN & MARGIN -->
         <div id="view-laporan" class="hidden flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800 pb-4">
                 <div>
                     <h2 class="text-lg md:text-xl font-display font-bold text-white">Laporan Omzet & Analytics Margin</h2>
                     <p class="text-xs text-slate-400">Ringkasan Keuangan, Penjualan, dan Riwayat Transaksi Cafe JUICE TRUE.</p>
                 </div>
-                <button onclick="exportData()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2">
-                    <i class="fa-solid fa-file-export"></i> Export JSON
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="clearAllTransactions()" class="px-3.5 py-2 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-400 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-trash-can"></i> Reset Riwayat
+                    </button>
+                    <button onclick="exportData()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-file-export"></i> Export JSON
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1111,7 +1116,19 @@
             document.getElementById('label-tax-rate').innerText = settings.taxRate;
             showToast('Pengaturan Disimpan!');
         }
+function clearAllTransactions() {
+            if (currentRole !== 'ADMIN') {
+                alert('Akses ditolak! Hanya Admin yang dapat menghapus seluruh riwayat transaksi.');
+                return;
+            }
 
+            if (confirm('Apakah Anda yakin ingin menghapus SELURUH riwayat transaksi penjualan di aplikasi ini?\n\nCatatan: Data yang sudah terlanjur terkirim ke Google Sheets tidak akan terhapus otomatis.')) {
+                transactions = [];
+                localStorage.removeItem('jt_trx');
+                renderLaporanView();
+                showToast('Seluruh riwayat transaksi berhasil di-reset!');
+            }
+        }
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ transactions, products, settings, users }, null, 2));
             const a = document.createElement('a');
