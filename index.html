@@ -414,14 +414,18 @@
                     <input type="url" id="crud-prod-img" required placeholder="https://..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-3 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-400 mb-1">Satuan Dasar</label>
+                        <label class="block font-bold text-slate-400 mb-1">Satuan</label>
                         <input type="text" id="crud-prod-unit" placeholder="Cup / Porsi" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-400 mb-1">Stok</label>
                         <input type="number" id="crud-prod-stock" value="100" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
+                    </div>
+                    <div id="single-price-wrapper">
+                        <label class="block font-bold text-slate-400 mb-1">Harga Jual (Rp)</label>
+                        <input type="number" id="crud-prod-price" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white" placeholder="Contoh: 3000">
                     </div>
                 </div>
 
@@ -431,7 +435,7 @@
                         <span class="block font-bold text-brand-400 text-xs uppercase">3 Pilihan Ukuran & HPP Bahan Berbeda</span>
                         <button type="button" onclick="addVariationRow()" class="text-[10px] bg-brand-500 text-white px-2.5 py-1 rounded-lg font-bold shadow hover:bg-brand-600 transition">+ Tambah Ukuran</button>
                     </div>
-                    <p class="text-[10px] text-slate-400">Atur HPP Bahan, HPP Kemasan, dan Harga Jual untuk masing-masing ukuran (12 oz, 16 oz, 18 oz).</p>
+                    <p class="text-[10px] text-slate-400">Hpp Bahan, Hpp Kemasan dan harga jual untuk masing-masing ukuran (12 oz, 16 oz, 18 oz).</p>
                     
                     <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-slate-400 px-1 pt-1">
                         <span>Ukuran Gelas</span>
@@ -443,7 +447,7 @@
                     <div id="variation-inputs-container" class="space-y-2"></div>
                 </div>
 
-                <!-- Rincian Produk & Harga (1 Varian Saja) -->
+                <!-- Variasi / Ukuran Tunggal -->
                 <div id="single-variation-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-2" style="display: none;">
                     <div class="flex justify-between items-center">
                         <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Produk & Harga (1 Varian)</span>
@@ -460,10 +464,32 @@
                     <div id="single-variation-container" class="space-y-2">
                         <div class="grid grid-cols-4 gap-2 items-center var-single-row bg-slate-900/50 p-2 rounded-xl border border-slate-700">
                             <input type="text" id="single-var-size" placeholder="Cup / Porsi" value="Regular" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
-                            <input type="number" id="single-var-hppbahan" placeholder="HPP Bahan" value="1000" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+                            <input type="number" id="single-var-hppbahan" placeholder="HPP Bahan" value="2000" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
                             <input type="number" id="single-var-hppkemasan" placeholder="HPP Kemasan" value="1460" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
                             <input type="number" id="single-var-price" placeholder="Harga Jual" value="3000" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
                         </div>
+                    </div>
+                </div>
+
+                <div id="single-hpp-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-3" style="display: none;">
+                    <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Kalkulasi HPP Bahan (1 Ukuran)</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-slate-400 mb-1">HPP per Kg/Liter Bahan (Rp)</label>
+                            <input type="number" id="crud-hpp-per-kg" value="60000" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Takaran Bahan (g/ml)</label>
+                            <input type="number" id="crud-hpp-grams" value="20" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Biaya Ops & Kemasan (Tetap)</label>
+                        <input type="number" id="crud-hpp-ops" value="1460" readonly class="w-full px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-brand-400 font-bold cursor-not-allowed">
+                    </div>
+                    <div class="pt-2 border-t border-slate-700 flex justify-between font-bold text-slate-200">
+                        <span>TOTAL ESTIMASI HPP:</span>
+                        <span id="crud-total-hpp-preview" class="text-brand-400">Rp 0</span>
                     </div>
                 </div>
 
@@ -642,7 +668,7 @@
             const container = document.getElementById('toast-container');
             if(!container) return;
             const toast = document.createElement('div');
-            toast.className = 'bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg border border-slate-700 flex items-center gap-2 pointer-events-none';
+            toast.className = 'bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg border border-slate-700 flex items-center gap-2 pointer-events-auto';
             toast.innerHTML = `<i class="fa-solid fa-circle-check text-brand-500"></i> ${msg}`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 2500);
@@ -886,6 +912,7 @@
                 if (paid < total) { alert('Nominal uang tunai belum cukup!'); return; }
             }
 
+            // HITUNG TOTAL HPP & PROFIT RIIL DARI KERANJANG
             const hppTotal = cart.reduce((sum, item) => {
                 const itemHppUnit = (item.hppBahan || 0) + (item.hppKemasan || 1460);
                 return sum + (itemHppUnit * item.qty);
@@ -902,8 +929,8 @@
                 total, 
                 paid, 
                 change: paid - total,
-                hppTotal,
-                profitTotal,
+                hppTotal,       // <-- Terekam untuk laporan dinamis
+                profitTotal,    // <-- Terekam untuk laporan dinamis
                 method: selectedPaymentMethod
             };
 
@@ -985,18 +1012,18 @@
                 document.getElementById('crud-prod-stock').value = prod.stock;
                 
                 const isBeverageWithVar = (prod.category === 'juice' || prod.category === 'coffee');
+                const priceWrapper = document.getElementById('single-price-wrapper');
                 const varSection = document.getElementById('product-variation-section');
                 const singleVarSection = document.getElementById('single-variation-section');
+                const singleHppSection = document.getElementById('single-hpp-section');
 
+                if (priceWrapper) priceWrapper.style.display = isBeverageWithVar ? 'none' : 'block';
                 if (varSection) varSection.style.display = isBeverageWithVar ? 'block' : 'none';
                 if (singleVarSection) singleVarSection.style.display = isBeverageWithVar ? 'none' : 'block';
+                if (singleHppSection) singleHppSection.style.display = isBeverageWithVar ? 'none' : 'block';
 
-                if (!isBeverageWithVar) {
-                    const firstVar = (prod.variations && prod.variations[0]) ? prod.variations[0] : {};
-                    document.getElementById('single-var-size').value = firstVar.size || prod.unit || 'Regular';
-                    document.getElementById('single-var-hppbahan').value = firstVar.hppBahan || prod.hppBahan || 1000;
-                    document.getElementById('single-var-hppkemasan').value = firstVar.hppKemasan || prod.opsKemasan || 1460;
-                    document.getElementById('single-var-price').value = firstVar.price || prod.price || 3000;
+                if (!isBeverageWithVar && document.getElementById('crud-prod-price')) {
+                    document.getElementById('crud-prod-price').value = prod.price;
                 }
                 
                 if (isBeverageWithVar && prod.hasVariations && prod.variations && prod.variations.length > 0) {
@@ -1011,27 +1038,39 @@
                 
                 const cat = document.getElementById('crud-prod-cat').value;
                 const isBeverageWithVar = (cat === 'juice' || cat === 'coffee');
+                const priceWrapper = document.getElementById('single-price-wrapper');
                 const varSection = document.getElementById('product-variation-section');
                 const singleVarSection = document.getElementById('single-variation-section');
+                const singleHppSection = document.getElementById('single-hpp-section');
 
+                if (priceWrapper) priceWrapper.style.display = isBeverageWithVar ? 'none' : 'block';
                 if (varSection) varSection.style.display = isBeverageWithVar ? 'block' : 'none';
                 if (singleVarSection) singleVarSection.style.display = isBeverageWithVar ? 'none' : 'block';
+                if (singleHppSection) singleHppSection.style.display = isBeverageWithVar ? 'none' : 'block';
 
                 if (isBeverageWithVar) {
                     addVariationRow('12 oz', '3500', '1460', '5000');
                     addVariationRow('16 oz', '5000', '1460', '8000');
                     addVariationRow('18 oz', '6500', '1460', '10000');
                 } else {
-                    document.getElementById('single-var-size').value = 'Regular';
-                    document.getElementById('single-var-hppbahan').value = '1000';
-                    document.getElementById('single-var-hppkemasan').value = '1460';
-                    document.getElementById('single-var-price').value = '3000';
+                    document.getElementById('crud-hpp-per-kg').value = 60000;
+                    document.getElementById('crud-hpp-grams').value = 20;
+                    calcHppForm();
                 }
             }
             document.getElementById('modal-product-crud').classList.remove('hidden');
         }
 
         function closeProductModal() { document.getElementById('modal-product-crud').classList.add('hidden'); }
+
+        function calcHppForm() {
+            const kg = parseFloat(document.getElementById('crud-hpp-per-kg')?.value) || 0;
+            const grams = parseFloat(document.getElementById('crud-hpp-grams')?.value) || 0;
+            const opsKemasan = 1460;
+            const total = Math.round((kg / 1000) * grams) + opsKemasan;
+            const previewEl = document.getElementById('crud-total-hpp-preview');
+            if (previewEl) previewEl.innerText = formatIDR(total);
+        }
 
         function editProduct(id) {
             const p = products.find(prod => prod.id === id);
@@ -1061,11 +1100,10 @@
                     totalHpp = hppB + hppK;
                     price = firstVar.price;
                 } else {
-                    const firstVar = (p.variations && p.variations[0]) ? p.variations[0] : {};
-                    const hppBahan = parseFloat(firstVar.hppBahan || p.hppBahan) || 0;
-                    const hppKemasan = parseFloat(firstVar.hppKemasan || p.opsKemasan) || 1460;
-                    totalHpp = hppBahan + hppKemasan;
-                    price = firstVar.price || p.price || 0;
+                    const hppBahan = Math.round(((p.hppKg || 60000) / 1000) * (p.grams || 20));
+                    const opsKemasan = p.opsKemasan || 1460;
+                    totalHpp = hppBahan + opsKemasan;
+                    price = p.price;
                 }
 
                 profit = price - totalHpp;
@@ -1094,6 +1132,7 @@
             }).join('');
         }
 
+        // LAPORAN OMZET & ANALYTICS DINAMIS BERDASARKAN HPP & PROFIT RIIL
         function renderLaporanView() {
             let omzet = 0;
             let totalHpp = 0;
@@ -1213,11 +1252,15 @@
                 catSelect.addEventListener('change', function() {
                     const cat = this.value;
                     const isBeverageWithVar = (cat === 'juice' || cat === 'coffee');
+                    const priceWrapper = document.getElementById('single-price-wrapper');
                     const varContainer = document.getElementById('product-variation-section');
                     const singleVarContainer = document.getElementById('single-variation-section');
+                    const singleHppSection = document.getElementById('single-hpp-section');
                     
+                    if (priceWrapper) priceWrapper.style.display = isBeverageWithVar ? 'none' : 'block';
                     if (varContainer) varContainer.style.display = isBeverageWithVar ? 'block' : 'none';
                     if (singleVarContainer) singleVarContainer.style.display = isBeverageWithVar ? 'none' : 'block';
+                    if (singleHppSection) singleHppSection.style.display = isBeverageWithVar ? 'none' : 'block';
                 });
             }
         });
