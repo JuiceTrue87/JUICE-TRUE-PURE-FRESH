@@ -437,6 +437,15 @@
         <button type="button" onclick="addVariationRow()" class="text-[10px] bg-brand-500 text-white px-2.5 py-1 rounded-lg font-bold shadow hover:bg-brand-600 transition">+ Tambah Ukuran</button>
     </div>
     <p class="text-[10px] text-slate-400">Atur takaran gram/ml dan harga jual untuk masing-masing ukuran (12 oz, 16 oz, 18 oz).</p>
+    
+    <!-- Header Kolom Sesuai Permintaan -->
+    <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-slate-400 px-1 pt-1">
+        <span>Ukuran Gelas</span>
+        <span>HPP Bahan</span>
+        <span>HPP Kemasan</span>
+        <span>Harga Jual</span>
+    </div>
+
     <div id="variation-inputs-container" class="space-y-2"></div>
 </div>
 
@@ -462,13 +471,13 @@
         <span id="crud-total-hpp-preview" class="text-brand-400">Rp 0</span>
     </div>
 </div>
-                <div class="pt-3 flex justify-end gap-2">
-                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-slate-800 text-slate-400 font-bold rounded-xl">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-brand-500 text-white font-bold rounded-xl shadow-lg">Simpan Produk</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="pt-3 flex justify-end gap-2">
+    <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-slate-800 text-slate-400 font-bold rounded-xl">Batal</button>
+    <button type="submit" class="px-5 py-2 bg-brand-500 text-white font-bold rounded-xl shadow-lg">Simpan Produk</button>
+</div>
+</form>
+</div>
+</div>
 
     <!-- MODAL USER CRUD -->
     <div id="modal-user-crud" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
@@ -924,22 +933,22 @@
 
         function closeReceiptModal() { document.getElementById('modal-receipt').classList.add('hidden'); }
 
-        // ==========================================
+        /// ==========================================
 // FITUR UTAMA: VARIASI UKURAN & FORM CRUD PRODUK
 // ==========================================
 
-function addVariationRow(size = '', grams = '', hppPerkg = 60000, price = '') {
+function addVariationRow(size = '', hppBahan = '', hppKemasan = 1460, price = '') {
     const container = document.getElementById('variation-inputs-container');
     if (!container) return;
 
     const div = document.createElement('div');
     div.className = "grid grid-cols-4 gap-2 items-center var-row bg-slate-900/50 p-2 rounded-xl border border-slate-700";
     div.innerHTML = `
-        <input type="text" placeholder="Ukuran (Cth: 12 oz)" value="${size}" class="var-size px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
-        <input type="number" placeholder="Takaran (g/ml)" value="${grams}" class="var-grams px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
-        <input type="number" placeholder="HPP/Kg Bahan" value="${hppPerkg}" class="var-hppkg px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        <input type="text" placeholder="12 oz" value="${size}" class="var-size px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        <input type="number" placeholder="HPP Bahan" value="${hppBahan}" class="var-hppbahan px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        <input type="number" placeholder="HPP Kemasan" value="${hppKemasan}" class="var-hppkemasan px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
         <div class="flex items-center gap-1">
-            <input type="number" placeholder="Harga (Rp)" value="${price}" class="var-price px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs w-full">
+            <input type="number" placeholder="Harga Jual" value="${price}" class="var-price px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs w-full">
             <button type="button" onclick="this.closest('.var-row').remove()" class="text-rose-400 hover:text-rose-300 py-1.5 px-1 text-center font-bold"><i class="fa-solid fa-trash"></i></button>
         </div>
     `;
@@ -980,7 +989,7 @@ function openProductModal(prod = null) {
 
         if (isBeverageWithVar && prod.hasVariations && prod.variations && prod.variations.length > 0) {
             prod.variations.forEach(v => {
-                addVariationRow(v.size, v.grams, v.hppPerKg || 60000, v.price);
+                addVariationRow(v.size, v.hppBahan || v.grams, v.hppKemasan || 1460, v.price);
             });
         }
     } else {
@@ -1000,9 +1009,9 @@ function openProductModal(prod = null) {
 
         if (isBeverageWithVar) {
             // Tambahkan 3 variasi default untuk Ice Juice / Ice Coffee
-            addVariationRow('12 oz', '20', '60000', '5000');
-            addVariationRow('16 oz', '35', '60000', '8000');
-            addVariationRow('18 oz', '50', '60000', '10000');
+            addVariationRow('12 oz', '3500', '1460', '5000');
+            addVariationRow('16 oz', '5000', '1460', '8000');
+            addVariationRow('18 oz', '6500', '1460', '10000');
         } else {
             document.getElementById('crud-hpp-per-kg').value = 60000;
             document.getElementById('crud-hpp-grams').value = 20;
@@ -1047,9 +1056,9 @@ function renderCatalogTable() {
         if (p.hasVariations && p.variations && p.variations.length > 0) {
             // Ambil patokan variasi pertama untuk ringkasan tabel katalog
             const firstVar = p.variations[0];
-            const hppBahan = Math.round(((firstVar.hppPerKg || 60000) / 1000) * (firstVar.grams || 20));
-            const opsKemasan = p.opsKemasan || 1460;
-            totalHpp = hppBahan + opsKemasan;
+            const hppB = parseFloat(firstVar.hppBahan) || 0;
+            const hppK = parseFloat(firstVar.hppKemasan) || 1460;
+            totalHpp = hppB + hppK;
             price = firstVar.price;
         } else {
             const hppBahan = Math.round(((p.hppKg || 60000) / 1000) * (p.grams || 20));
