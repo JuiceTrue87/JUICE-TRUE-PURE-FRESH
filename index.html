@@ -430,13 +430,13 @@
                     </div>
                 </div>
 
-                <!-- Variasi Ukuran Ganda (Khusus Ice Juice / Ice Coffee) -->
+                <<!-- Variasi Ukuran Ganda (Khusus Ice Juice / Ice Coffee) -->
 <div id="product-variation-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-2">
     <div class="flex justify-between items-center">
         <span class="block font-bold text-brand-400 text-xs uppercase">3 Pilihan Ukuran & HPP Bahan Berbeda</span>
         <button type="button" onclick="addVariationRow()" class="text-[10px] bg-brand-500 text-white px-2.5 py-1 rounded-lg font-bold shadow hover:bg-brand-600 transition">+ Tambah Ukuran</button>
     </div>
-    <p class="text-[10px] text-slate-400">Atur takaran gram/ml dan harga jual untuk masing-masing ukuran (12 oz, 16 oz, 18 oz).</p>
+    <p class="text-[10px] text-slate-400">Hpp Bahan, Hpp Kemasan dan harga jual untuk masing-masing ukuran (12 oz, 16 oz, 18 oz).</p>
     
     <!-- Header Kolom Sesuai Permintaan -->
     <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-slate-400 px-1 pt-1">
@@ -449,8 +449,34 @@
     <div id="variation-inputs-container" class="space-y-2"></div>
 </div>
 
-<!-- Rincian Kalkulasi HPP (Khusus Produk 1 Harga) -->
-<div id="single-hpp-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-3">
+<!-- Variasi / Ukuran Tunggal (Untuk Ice Tea, Pop Ice, Milky, Makanan, Cemilan) -->
+<div id="single-variation-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-2" style="display: none;">
+    <div class="flex justify-between items-center">
+        <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Produk & Harga (1 Varian)</span>
+    </div>
+    <p class="text-[10px] text-slate-400">Atur Ukuran Gelas/Porsi, HPP Bahan, HPP Kemasan, dan Harga Jual.</p>
+    
+    <!-- Header Kolom -->
+    <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-slate-400 px-1 pt-1">
+        <span>Ukuran / Porsi</span>
+        <span>HPP Bahan</span>
+        <span>HPP Kemasan</span>
+        <span>Harga Jual</span>
+    </div>
+
+    <!-- Container khusus 1 baris input -->
+    <div id="single-variation-container" class="space-y-2">
+        <div class="grid grid-cols-4 gap-2 items-center var-single-row bg-slate-900/50 p-2 rounded-xl border border-slate-700">
+            <input type="text" id="single-var-size" placeholder="Cup / Porsi" value="Regular" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+            <input type="number" id="single-var-hppbahan" placeholder="HPP Bahan" value="2000" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+            <input type="number" id="single-var-hppkemasan" placeholder="HPP Kemasan" value="1460" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+            <input type="number" id="single-var-price" placeholder="Harga Jual" value="3000" class="px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        </div>
+    </div>
+</div>
+
+<!-- Rincian Kalkulasi HPP (Cadangan / Opsional) -->
+<div id="single-hpp-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-3" style="display: none;">
     <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Kalkulasi HPP Bahan (1 Ukuran)</span>
     <div class="grid grid-cols-2 gap-2">
         <div>
@@ -471,6 +497,7 @@
         <span id="crud-total-hpp-preview" class="text-brand-400">Rp 0</span>
     </div>
 </div>
+
 <div class="pt-3 flex justify-end gap-2">
     <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-slate-800 text-slate-400 font-bold rounded-xl">Batal</button>
     <button type="submit" class="px-5 py-2 bg-brand-500 text-white font-bold rounded-xl shadow-lg">Simpan Produk</button>
@@ -1185,126 +1212,135 @@ function exportData() {
 }
 
         // ==========================================
-        // LOGIKA DINAMIS HARGA & KATEGORI PRODUK POS
-        // ==========================================
+// LOGIKA DINAMIS HARGA & KATEGORI PRODUK POS
+// ==========================================
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const catSelect = document.getElementById('crud-prod-cat');
-            if (catSelect) {
-                catSelect.addEventListener('change', function() {
-                    const cat = this.value;
-                    const isBeverageWithVar = (cat === 'juice' || cat === 'coffee');
-                    const priceWrapper = document.getElementById('single-price-wrapper');
-                    const varContainer = document.getElementById('product-variation-section');
-                    
-                    if (priceWrapper) priceWrapper.style.display = isBeverageWithVar ? 'none' : 'block';
-                    if (varContainer) varContainer.style.display = isBeverageWithVar ? 'block' : 'none';
-                });
+document.addEventListener("DOMContentLoaded", function() {
+    const catSelect = document.getElementById('crud-prod-cat');
+    if (catSelect) {
+        catSelect.addEventListener('change', function() {
+            const cat = this.value;
+            const isBeverageWithVar = (cat === 'juice' || cat === 'coffee');
+            const priceWrapper = document.getElementById('single-price-wrapper');
+            const varContainer = document.getElementById('product-variation-section');
+            const singleVarContainer = document.getElementById('single-variation-section');
+            
+            if (priceWrapper) priceWrapper.style.display = 'none';
+            if (varContainer) varContainer.style.display = isBeverageWithVar ? 'block' : 'none';
+            if (singleVarContainer) singleVarContainer.style.display = isBeverageWithVar ? 'none' : 'block';
+        });
+    }
+});
+
+// Fungsi saat klik tambah produk di POS
+function handlePosItemClick(id) {
+    const prod = products.find(p => p.id === id);
+    if (!prod) return;
+
+    // Cek apakah kategori ice juice / ice coffee dan memiliki variasi
+    if ((prod.category === 'juice' || prod.category === 'coffee') && prod.hasVariations && prod.variations && prod.variations.length > 0) {
+        document.getElementById('var-title').innerText = `Pilih Ukuran - ${prod.name}`;
+        document.getElementById('var-options-container').innerHTML = prod.variations.map(v => {
+            const hppB = parseFloat(v.hppBahan) || 0;
+            const hppK = parseFloat(v.hppKemasan) || 1460;
+            const totalHpp = hppB + hppK;
+            const margin = v.price > 0 ? (((v.price - totalHpp) / v.price) * 100).toFixed(1) : '0.0';
+
+            return `
+                <button onclick="addVarToCart(${prod.id}, '${v.size}', ${v.price})" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-2xl flex justify-between items-center text-sm font-bold hover:border-brand-500 hover:bg-slate-750 transition-all shadow">
+                    <div class="text-left">
+                        <span class="text-white block font-bold">${v.size}</span>
+                        <span class="text-[10px] text-slate-400">HPP: ${formatIDR(totalHpp)} | Margin: ${margin}%</span>
+                    </div>
+                    <span class="text-brand-400 font-extrabold text-base">${formatIDR(v.price)}</span>
+                </button>
+            `;
+        }).join('');
+        document.getElementById('modal-variation').classList.remove('hidden');
+    } else {
+        // Untuk produk jenis lain (1 varian/harga jual)
+        const price = (prod.variations && prod.variations[0]) ? prod.variations[0].price : prod.price;
+        addToCart(prod.id, prod.name, price, prod.img);
+    }
+}
+
+// Memasukkan pilihan variasi ke keranjang dengan nama dan harga spesifik
+function addVarToCart(id, size, price) {
+    const prod = products.find(p => p.id === id);
+    closeVariationModal();
+    // Format nama item di keranjang & laporan mencantumkan ukurannya (misal: Jus Alpukat - 16 oz)
+    addToCart(prod.id, `${prod.name} (${size})`, price, prod.img);
+}
+
+// Saat disimpan dari form CRUD
+function saveProductForm(e) {
+    e.preventDefault();
+    const id = document.getElementById('crud-prod-id').value;
+    const category = document.getElementById('crud-prod-cat').value;
+    const isBeverageWithVar = (category === 'juice' || category === 'coffee');
+    
+    let variations = [];
+
+    if (isBeverageWithVar) {
+        const variationRows = document.querySelectorAll('.var-row');
+        variationRows.forEach(row => {
+            const size = row.querySelector('.var-size').value;
+            const hppBahan = parseFloat(row.querySelector('.var-hppbahan').value) || 0;
+            const hppKemasan = parseFloat(row.querySelector('.var-hppkemasan').value) || 1460;
+            const price = parseFloat(row.querySelector('.var-price').value) || 0;
+            if (size && price) {
+                variations.push({ size, hppBahan, hppKemasan, price });
             }
         });
+    } else {
+        // Ambil data dari 1 varian tunggal
+        const size = document.getElementById('single-var-size')?.value || 'Regular';
+        const hppBahan = parseFloat(document.getElementById('single-var-hppbahan')?.value) || 0;
+        const hppKemasan = parseFloat(document.getElementById('single-var-hppkemasan')?.value) || 1460;
+        const price = parseFloat(document.getElementById('single-var-price')?.value) || 0;
+        variations.push({ size, hppBahan, hppKemasan, price });
+    }
 
-        // Fungsi saat klik tambah produk di POS
-        function handlePosItemClick(id) {
-            const prod = products.find(p => p.id === id);
-            if (!prod) return;
+    const primaryVar = variations[0] || { price: 0, hppBahan: 0, hppKemasan: 1460 };
+    const hasVariations = isBeverageWithVar && variations.length > 0;
 
-            // Cek apakah kategori ice juice / ice coffee dan memiliki variasi
-            if ((prod.category === 'juice' || prod.category === 'coffee') && prod.hasVariations && prod.variations && prod.variations.length > 0) {
-                document.getElementById('var-title').innerText = `Pilih 3 Pilihan Ukuran - ${prod.name}`;
-                document.getElementById('var-options-container').innerHTML = prod.variations.map(v => {
-                    const hppKg = v.hppPerKg || prod.hppKg || 60000;
-                    const grams = v.grams || 20;
-                    const totalHpp = Math.round((hppKg / 1000) * grams) + 1460;
-                    const margin = (((v.price - totalHpp) / v.price) * 100).toFixed(1);
+    const prodData = {
+        id: id ? parseInt(id) : Date.now(),
+        name: document.getElementById('crud-prod-name').value,
+        category: category,
+        img: document.getElementById('crud-prod-img').value,
+        unit: primaryVar.size || 'Cup',
+        stock: parseInt(document.getElementById('crud-prod-stock').value) || 0,
+        price: primaryVar.price,
+        hppBahan: primaryVar.hppBahan,
+        opsKemasan: primaryVar.hppKemasan,
+        hasVariations: hasVariations,
+        variations: variations
+    };
 
-                    return `
-                        <button onclick="addVarToCart(${prod.id}, '${v.size}', ${v.price})" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-2xl flex justify-between items-center text-sm font-bold hover:border-brand-500 hover:bg-slate-750 transition-all shadow">
-                            <div class="text-left">
-                                <span class="text-white block font-bold">${v.size} (${grams}g)</span>
-                                <span class="text-[10px] text-slate-400">HPP: ${formatIDR(totalHpp)} | Margin: ${margin}%</span>
-                            </div>
-                            <span class="text-brand-400 font-extrabold text-base">${formatIDR(v.price)}</span>
-                        </button>
-                    `;
-                }).join('');
-                document.getElementById('modal-variation').classList.remove('hidden');
-            } else {
-                // Untuk produk jenis lain (1 harga jual)
-                addToCart(prod.id, prod.name, prod.price, prod.img);
-            }
-        }
+    if (id) {
+        const idx = products.findIndex(p => p.id === parseInt(id));
+        if (idx !== -1) products[idx] = { ...products[idx], ...prodData };
+    } else {
+        products.push(prodData);
+    }
 
-        // Memasukkan pilihan variasi ke keranjang dengan nama dan harga spesifik
-        function addVarToCart(id, size, price) {
-            const prod = products.find(p => p.id === id);
-            closeVariationModal();
-            // Format nama item di keranjang & laporan mencantumkan ukurannya (misal: Jus Alpukat - 16 oz)
-            addToCart(prod.id, `${prod.name} (${size})`, price, prod.img);
-        }
+    localStorage.setItem('jt_products', JSON.stringify(products));
+    showToast('Produk Berhasil Disimpan!');
+    closeProductModal();
+    renderCatalogTable();
+    renderPosProducts();
 
-        // Saat disimpan dari form CRUD
-        function saveProductForm(e) {
-            e.preventDefault();
-            const id = document.getElementById('crud-prod-id').value;
-            const category = document.getElementById('crud-prod-cat').value;
-            const isBeverageWithVar = (category === 'juice' || category === 'coffee');
-            
-            const variationRows = document.querySelectorAll('.var-row');
-            let variations = [];
-            let hasVariations = false;
-
-            if (isBeverageWithVar && variationRows.length > 0) {
-                variationRows.forEach(row => {
-                    const size = row.querySelector('.var-size').value;
-                    const grams = parseFloat(row.querySelector('.var-grams').value) || 0;
-                    const price = parseFloat(row.querySelector('.var-price').value) || 0;
-                    if (size && price) {
-                        variations.push({ size, grams, hppPerKg: 60000, price });
-                    }
-                });
-                if (variations.length > 0) hasVariations = true;
-            }
-
-            const singlePriceInput = document.getElementById('crud-prod-price');
-            const singlePrice = singlePriceInput ? parseFloat(singlePriceInput.value) || 0 : 0;
-
-            const prodData = {
-                id: id ? parseInt(id) : Date.now(),
-                name: document.getElementById('crud-prod-name').value,
-                category: category,
-                img: document.getElementById('crud-prod-img').value,
-                unit: document.getElementById('crud-prod-unit').value,
-                stock: parseInt(document.getElementById('crud-prod-stock').value) || 0,
-                price: isBeverageWithVar ? (hasVariations ? variations[0].price : 0) : singlePrice,
-                hppKg: 60000,
-                opsKemasan: 1460,
-                hasVariations: isBeverageWithVar ? hasVariations : false,
-                variations: isBeverageWithVar ? variations : []
-            };
-
-            if (id) {
-                const idx = products.findIndex(p => p.id === parseInt(id));
-                if (idx !== -1) products[idx] = { ...products[idx], ...prodData };
-            } else {
-                products.push(prodData);
-            }
-
-            localStorage.setItem('jt_products', JSON.stringify(products));
-            showToast('Produk Berhasil Disimpan!');
-            closeProductModal();
-            renderCatalogTable();
-            renderPosProducts();
-
-            if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'saveProduct', product: prodData })
-                })
-                .then(res => res.json())
-                .catch(err => console.log('Gagal sinkron produk:', err));
-            }
-        }
+    if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'saveProduct', product: prodData })
+        })
+        .then(res => res.json())
+        .catch(err => console.log('Gagal sinkron produk:', err));
+    }
+}
     </script>
 </body>
 </html>
