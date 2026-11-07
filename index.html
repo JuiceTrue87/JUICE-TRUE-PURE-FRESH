@@ -430,37 +430,38 @@
                     </div>
                 </div>
 
-                <!-- Variasi Ukuran Ganda (Untuk Ice Juice / Ice Coffee) -->
-                <div id="product-variation-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="block font-bold text-brand-400 text-xs uppercase">Variasi Ukuran & Harga (Opsional)</span>
-                        <button type="button" onclick="addVariationRow()" class="text-[10px] bg-brand-500 text-white px-2.5 py-1 rounded-lg font-bold shadow hover:bg-brand-600 transition">+ Tambah Ukuran</button>
-                    </div>
-                    <p class="text-[10px] text-slate-400">Kosongkan jika produk hanya memiliki satu harga (tanpa pilihan ukuran).</p>
-                    <div id="variation-inputs-container" class="space-y-2"></div>
-                </div>
+                <!-- Variasi Ukuran Ganda (Khusus Ice Juice / Ice Coffee) -->
+<div id="product-variation-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-2">
+    <div class="flex justify-between items-center">
+        <span class="block font-bold text-brand-400 text-xs uppercase">3 Pilihan Ukuran & HPP Bahan Berbeda</span>
+        <button type="button" onclick="addVariationRow()" class="text-[10px] bg-brand-500 text-white px-2.5 py-1 rounded-lg font-bold shadow hover:bg-brand-600 transition">+ Tambah Ukuran</button>
+    </div>
+    <p class="text-[10px] text-slate-400">Atur takaran gram/ml dan harga jual untuk masing-masing ukuran (12 oz, 16 oz, 18 oz).</p>
+    <div id="variation-inputs-container" class="space-y-2"></div>
+</div>
 
-                <div class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-3">
-                    <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Kalkulasi HPP</span>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-slate-400 mb-1">HPP per Kg/Liter Bahan (Rp)</label>
-                            <input type="number" id="crud-hpp-per-kg" value="60000" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
-                        </div>
-                        <div>
-                            <label class="block font-slate-400 mb-1">Takaran Bahan (g/ml)</label>
-                            <input type="number" id="crud-hpp-grams" value="20" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Biaya Ops & Kemasan (Tetap)</label>
-                        <input type="number" id="crud-hpp-ops" value="1460" readonly class="w-full px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-brand-400 font-bold cursor-not-allowed">
-                    </div>
-                    <div class="pt-2 border-t border-slate-700 flex justify-between font-bold text-slate-200">
-                        <span>TOTAL ESTIMASI HPP:</span>
-                        <span id="crud-total-hpp-preview" class="text-brand-400">Rp 0</span>
-                    </div>
-                </div>
+<!-- Rincian Kalkulasi HPP (Khusus Produk 1 Harga) -->
+<div id="single-hpp-section" class="p-3 bg-slate-800/50 rounded-2xl border border-slate-800 space-y-3">
+    <span class="block font-bold text-brand-400 text-xs uppercase">Rincian Kalkulasi HPP Bahan (1 Ukuran)</span>
+    <div class="grid grid-cols-2 gap-2">
+        <div>
+            <label class="block text-slate-400 mb-1">HPP per Kg/Liter Bahan (Rp)</label>
+            <input type="number" id="crud-hpp-per-kg" value="60000" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
+        </div>
+        <div>
+            <label class="block text-slate-400 mb-1">Takaran Bahan (g/ml)</label>
+            <input type="number" id="crud-hpp-grams" value="20" oninput="calcHppForm()" class="w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white">
+        </div>
+    </div>
+    <div>
+        <label class="block text-slate-400 mb-1">Biaya Ops & Kemasan (Tetap)</label>
+        <input type="number" id="crud-hpp-ops" value="1460" readonly class="w-full px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-brand-400 font-bold cursor-not-allowed">
+    </div>
+    <div class="pt-2 border-t border-slate-700 flex justify-between font-bold text-slate-200">
+        <span>TOTAL ESTIMASI HPP:</span>
+        <span id="crud-total-hpp-preview" class="text-brand-400">Rp 0</span>
+    </div>
+</div>
                 <div class="pt-3 flex justify-end gap-2">
                     <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-slate-800 text-slate-400 font-bold rounded-xl">Batal</button>
                     <button type="submit" class="px-5 py-2 bg-brand-500 text-white font-bold rounded-xl shadow-lg">Simpan Produk</button>
@@ -924,223 +925,255 @@
         function closeReceiptModal() { document.getElementById('modal-receipt').classList.add('hidden'); }
 
         // ==========================================
-        // FITUR UTAMA: VARIASI UKURAN & FORM CRUD PRODUK
-        // ==========================================
+// FITUR UTAMA: VARIASI UKURAN & FORM CRUD PRODUK
+// ==========================================
 
-        function addVariationRow(size = '', grams = '', price = '') {
-            const container = document.getElementById('variation-inputs-container');
-            if (!container) return;
+function addVariationRow(size = '', grams = '', hppPerkg = 60000, price = '') {
+    const container = document.getElementById('variation-inputs-container');
+    if (!container) return;
 
-            const div = document.createElement('div');
-            div.className = "grid grid-cols-4 gap-2 items-center var-row bg-slate-900/50 p-2 rounded-xl border border-slate-700";
-            div.innerHTML = `
-                <input type="text" placeholder="Ukuran (Cth: 12 oz)" value="${size}" class="var-size px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
-                <input type="number" placeholder="Takaran (g)" value="${grams}" class="var-grams px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
-                <input type="number" placeholder="Harga (Rp)" value="${price}" class="var-price px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 py-1.5 text-center font-bold"><i class="fa-solid fa-trash"></i></button>
-            `;
-            container.appendChild(div);
+    const div = document.createElement('div');
+    div.className = "grid grid-cols-4 gap-2 items-center var-row bg-slate-900/50 p-2 rounded-xl border border-slate-700";
+    div.innerHTML = `
+        <input type="text" placeholder="Ukuran (Cth: 12 oz)" value="${size}" class="var-size px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        <input type="number" placeholder="Takaran (g/ml)" value="${grams}" class="var-grams px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        <input type="number" placeholder="HPP/Kg Bahan" value="${hppPerkg}" class="var-hppkg px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs">
+        <div class="flex items-center gap-1">
+            <input type="number" placeholder="Harga (Rp)" value="${price}" class="var-price px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs w-full">
+            <button type="button" onclick="this.closest('.var-row').remove()" class="text-rose-400 hover:text-rose-300 py-1.5 px-1 text-center font-bold"><i class="fa-solid fa-trash"></i></button>
+        </div>
+    `;
+    container.appendChild(div);
+}
+
+function openProductModal(prod = null) {
+    const container = document.getElementById('variation-inputs-container');
+    if (container) container.innerHTML = '';
+
+    if (prod) {
+        document.getElementById('prod-crud-title').innerText = "Edit Produk";
+        document.getElementById('crud-prod-id').value = prod.id;
+        document.getElementById('crud-prod-name').value = prod.name;
+        document.getElementById('crud-prod-cat').value = prod.category;
+        document.getElementById('crud-prod-img').value = prod.img;
+        document.getElementById('crud-prod-unit').value = prod.unit;
+        document.getElementById('crud-prod-stock').value = prod.stock;
+        
+        const isBeverageWithVar = (prod.category === 'juice' || prod.category === 'coffee');
+        const priceWrapper = document.getElementById('single-price-wrapper');
+        const varSection = document.getElementById('product-variation-section');
+        const singleHppSection = document.getElementById('single-hpp-section');
+
+        if (priceWrapper) priceWrapper.style.display = isBeverageWithVar ? 'none' : 'block';
+        if (varSection) varSection.style.display = isBeverageWithVar ? 'block' : 'none';
+        if (singleHppSection) singleHppSection.style.display = isBeverageWithVar ? 'none' : 'block';
+
+        if (!isBeverageWithVar && document.getElementById('crud-prod-price')) {
+            document.getElementById('crud-prod-price').value = prod.price;
         }
-
-        function openProductModal(prod = null) {
-            const container = document.getElementById('variation-inputs-container');
-            if (container) container.innerHTML = '';
-
-            if (prod) {
-                document.getElementById('prod-crud-title').innerText = "Edit Produk";
-                document.getElementById('crud-prod-id').value = prod.id;
-                document.getElementById('crud-prod-name').value = prod.name;
-                document.getElementById('crud-prod-cat').value = prod.category;
-                document.getElementById('crud-prod-img').value = prod.img;
-                document.getElementById('crud-prod-unit').value = prod.unit;
-                document.getElementById('crud-prod-stock').value = prod.stock;
-                
-                const isBeverageWithVar = (prod.category === 'juice' || prod.category === 'coffee');
-                document.getElementById('single-price-wrapper').style.display = isBeverageWithVar ? 'none' : 'block';
-                document.getElementById('product-variation-section').style.display = isBeverageWithVar ? 'block' : 'none';
-
-                if (!isBeverageWithVar && document.getElementById('crud-prod-price')) {
-                    document.getElementById('crud-prod-price').value = prod.price;
-                }
-                
-                document.getElementById('crud-hpp-per-kg').value = prod.hppKg || 60000;
-                document.getElementById('crud-hpp-grams').value = prod.grams || 20;
-
-                if (isBeverageWithVar && prod.hasVariations && prod.variations && prod.variations.length > 0) {
-                    prod.variations.forEach(v => {
-                        addVariationRow(v.size, v.grams, v.price);
-                    });
-                }
-            } else {
-                document.getElementById('prod-crud-title').innerText = "Tambah Produk Baru";
-                document.getElementById('prod-form').reset();
-                document.getElementById('crud-prod-id').value = '';
-                document.getElementById('crud-hpp-per-kg').value = 60000;
-                document.getElementById('crud-hpp-grams').value = 20;
-
-                const cat = document.getElementById('crud-prod-cat').value;
-                const isBeverageWithVar = (cat === 'juice' || cat === 'coffee');
-                document.getElementById('single-price-wrapper').style.display = isBeverageWithVar ? 'none' : 'block';
-                document.getElementById('product-variation-section').style.display = isBeverageWithVar ? 'block' : 'none';
-
-                // Tambahkan 3 variasi default untuk Ice Juice / Ice Coffee
-                if (isBeverageWithVar) {
-                    addVariationRow('12 oz', '20', '5000');
-                    addVariationRow('16 oz', '35', '8000');
-                    addVariationRow('18 oz', '50', '10000');
-                }
-            }
+        
+        if (!isBeverageWithVar) {
+            document.getElementById('crud-hpp-per-kg').value = prod.hppKg || 60000;
+            document.getElementById('crud-hpp-grams').value = prod.grams || 20;
             calcHppForm();
-            document.getElementById('modal-product-crud').classList.remove('hidden');
         }
 
-        function closeProductModal() { document.getElementById('modal-product-crud').classList.add('hidden'); }
+        if (isBeverageWithVar && prod.hasVariations && prod.variations && prod.variations.length > 0) {
+            prod.variations.forEach(v => {
+                addVariationRow(v.size, v.grams, v.hppPerKg || 60000, v.price);
+            });
+        }
+    } else {
+        document.getElementById('prod-crud-title').innerText = "Tambah Produk Baru";
+        document.getElementById('prod-form').reset();
+        document.getElementById('crud-prod-id').value = '';
+        
+        const cat = document.getElementById('crud-prod-cat').value;
+        const isBeverageWithVar = (cat === 'juice' || cat === 'coffee');
+        const priceWrapper = document.getElementById('single-price-wrapper');
+        const varSection = document.getElementById('product-variation-section');
+        const singleHppSection = document.getElementById('single-hpp-section');
 
-        function calcHppForm() {
-            const kg = parseFloat(document.getElementById('crud-hpp-per-kg').value) || 0;
-            const grams = parseFloat(document.getElementById('crud-hpp-grams').value) || 0;
-            const opsKemasan = 1460; // Biaya operasional + kemasan disatukan tetap
-            const total = Math.round((kg / 1000) * grams) + opsKemasan;
-            document.getElementById('crud-total-hpp-preview').innerText = formatIDR(total);
+        if (priceWrapper) priceWrapper.style.display = isBeverageWithVar ? 'none' : 'block';
+        if (varSection) varSection.style.display = isBeverageWithVar ? 'block' : 'none';
+        if (singleHppSection) singleHppSection.style.display = isBeverageWithVar ? 'none' : 'block';
+
+        if (isBeverageWithVar) {
+            // Tambahkan 3 variasi default untuk Ice Juice / Ice Coffee
+            addVariationRow('12 oz', '20', '60000', '5000');
+            addVariationRow('16 oz', '35', '60000', '8000');
+            addVariationRow('18 oz', '50', '60000', '10000');
+        } else {
+            document.getElementById('crud-hpp-per-kg').value = 60000;
+            document.getElementById('crud-hpp-grams').value = 20;
+            calcHppForm();
+        }
+    }
+    document.getElementById('modal-product-crud').classList.remove('hidden');
+}
+
+function closeProductModal() { document.getElementById('modal-product-crud').classList.add('hidden'); }
+
+function calcHppForm() {
+    const kg = parseFloat(document.getElementById('crud-hpp-per-kg')?.value) || 0;
+    const grams = parseFloat(document.getElementById('crud-hpp-grams')?.value) || 0;
+    const opsKemasan = 1460; // Biaya operasional + kemasan disatukan tetap
+    const total = Math.round((kg / 1000) * grams) + opsKemasan;
+    const previewEl = document.getElementById('crud-total-hpp-preview');
+    if (previewEl) previewEl.innerText = formatIDR(total);
+}
+
+function editProduct(id) {
+    const p = products.find(prod => prod.id === id);
+    if (p) openProductModal(p);
+}
+
+function deleteProduct(id) {
+    if (confirm('Hapus produk ini?')) {
+        products = products.filter(p => p.id !== id);
+        localStorage.setItem('jt_products', JSON.stringify(products));
+        renderCatalogTable();
+        renderPosProducts();
+        showToast('Produk dihapus');
+    }
+}
+
+function renderCatalogTable() {
+    const tbody = document.getElementById('catalog-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = products.map(p => {
+        let totalHpp, price, profit, margin;
+
+        if (p.hasVariations && p.variations && p.variations.length > 0) {
+            // Ambil patokan variasi pertama untuk ringkasan tabel katalog
+            const firstVar = p.variations[0];
+            const hppBahan = Math.round(((firstVar.hppPerKg || 60000) / 1000) * (firstVar.grams || 20));
+            const opsKemasan = p.opsKemasan || 1460;
+            totalHpp = hppBahan + opsKemasan;
+            price = firstVar.price;
+        } else {
+            const hppBahan = Math.round(((p.hppKg || 60000) / 1000) * (p.grams || 20));
+            const opsKemasan = p.opsKemasan || 1460;
+            totalHpp = hppBahan + opsKemasan;
+            price = p.price;
         }
 
-        function editProduct(id) {
-            const p = products.find(prod => prod.id === id);
-            if (p) openProductModal(p);
-        }
+        profit = price - totalHpp;
+        margin = price > 0 ? ((profit / price) * 100).toFixed(1) : '0.0';
 
-        function deleteProduct(id) {
-            if (confirm('Hapus produk ini?')) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('jt_products', JSON.stringify(products));
-                renderCatalogTable();
-                renderPosProducts();
-                showToast('Produk dihapus');
-            }
-        }
+        const hppDisplay = p.hasVariations ? 'Variatif (3 Ukuran)' : formatIDR(totalHpp - (p.opsKemasan || 1460));
 
-        function renderCatalogTable() {
-            const tbody = document.getElementById('catalog-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = products.map(p => {
-                const hppBahan = Math.round(((p.hppKg || 60000) / 1000) * (p.grams || 20));
-                const opsKemasan = p.opsKemasan || 1460;
-                const totalHpp = hppBahan + opsKemasan;
-                const price = p.hasVariations ? p.variations[0].price : p.price;
-                const profit = price - totalHpp;
-                const margin = ((profit / price) * 100).toFixed(1);
+        return `
+            <tr class="hover:bg-slate-800/40 border-b border-slate-800">
+                <td class="p-3.5 flex items-center gap-2">
+                    <img src="${p.img}" class="w-8 h-8 rounded-lg object-cover">
+                    <div><div class="font-bold text-white">${p.name} ${p.hasVariations ? '<span class="text-[10px] text-brand-400 font-bold">(Variasi)</span>' : ''}</div><div class="text-[10px] text-slate-500">${p.unit} - Stok: ${p.stock}</div></div>
+                </td>
+                <td class="p-3.5 uppercase font-bold text-[10px] text-brand-400">${p.category}</td>
+                <td class="p-3.5">${hppDisplay}</td>
+                <td class="p-3.5" colspan="2">${formatIDR(p.opsKemasan || 1460)} <span class="text-[9px] text-slate-400">(Ops+Kemasan)</span></td>
+                <td class="p-3.5 font-bold text-amber-400">${formatIDR(totalHpp)}</td>
+                <td class="p-3.5 font-bold text-white">${formatIDR(price)}</td>
+                <td class="p-3.5 font-bold ${profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatIDR(profit)}</td>
+                <td class="p-3.5 font-extrabold ${margin >= 30 ? 'text-emerald-400' : 'text-amber-400'}">${margin}%</td>
+                <td class="p-3.5 text-center flex justify-center gap-2">
+                    <button onclick="editProduct(${p.id})" class="text-xs text-brand-400 hover:text-brand-300 p-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button onclick="deleteProduct(${p.id})" class="text-xs text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
 
-                return `
-                    <tr class="hover:bg-slate-800/40 border-b border-slate-800">
-                        <td class="p-3.5 flex items-center gap-2">
-                            <img src="${p.img}" class="w-8 h-8 rounded-lg object-cover">
-                            <div><div class="font-bold text-white">${p.name} ${p.hasVariations ? '<span class="text-[10px] text-brand-400 font-bold">(Variasi)</span>' : ''}</div><div class="text-[10px] text-slate-500">${p.unit} - Stok: ${p.stock}</div></div>
-                        </td>
-                        <td class="p-3.5 uppercase font-bold text-[10px] text-brand-400">${p.category}</td>
-                        <td class="p-3.5">${formatIDR(hppBahan)}</td>
-                        <td class="p-3.5" colspan="2">${formatIDR(opsKemasan)} <span class="text-[9px] text-slate-400">(Ops+Kemasan)</span></td>
-                        <td class="p-3.5 font-bold text-amber-400">${formatIDR(totalHpp)}</td>
-                        <td class="p-3.5 font-bold text-white">${formatIDR(price)}</td>
-                        <td class="p-3.5 font-bold ${profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatIDR(profit)}</td>
-                        <td class="p-3.5 font-extrabold ${margin >= 30 ? 'text-emerald-400' : 'text-amber-400'}">${margin}%</td>
-                        <td class="p-3.5 text-center flex justify-center gap-2">
-                            <button onclick="editProduct(${p.id})" class="text-xs text-brand-400 hover:text-brand-300 p-1"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="deleteProduct(${p.id})" class="text-xs text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash-can"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
+function renderLaporanView() {
+    const omzet = transactions.reduce((s, t) => s + (t.total || 0), 0);
+    const estHpp = transactions.reduce((s, t) => s + Math.round((t.subtotal || 0) * 0.45), 0);
+    const estProfit = omzet - estHpp;
 
-        function renderLaporanView() {
-            const omzet = transactions.reduce((s, t) => s + (t.total || 0), 0);
-            const estHpp = transactions.reduce((s, t) => s + Math.round((t.subtotal || 0) * 0.45), 0);
-            const estProfit = omzet - estHpp;
+    document.getElementById('rep-omzet').innerText = formatIDR(omzet);
+    document.getElementById('rep-hpp').innerText = formatIDR(estHpp);
+    document.getElementById('rep-profit').innerText = formatIDR(estProfit);
+    document.getElementById('rep-trx').innerText = transactions.length + ' TRX';
 
-            document.getElementById('rep-omzet').innerText = formatIDR(omzet);
-            document.getElementById('rep-hpp').innerText = formatIDR(estHpp);
-            document.getElementById('rep-profit').innerText = formatIDR(estProfit);
-            document.getElementById('rep-trx').innerText = transactions.length + ' TRX';
+    document.getElementById('rep-trx-table').innerHTML = transactions.map(t => `
+        <tr class="border-b border-slate-800">
+            <td class="p-3 font-mono font-bold text-brand-400">#${t.id || ' - '}</td>
+            <td class="p-3 text-slate-400">${t.date || ' - '}</td>
+            <td class="p-3 font-bold uppercase text-[10px]">${t.method || 'TUNAI'}</td>
+            <td class="p-3 text-slate-300">${t.items ? t.items.map(i => `${i.name} (${i.qty})`).join(', ') : ''}</td>
+            <td class="p-3 text-right font-bold text-white">${formatIDR(t.total || 0)}</td>
+        </tr>
+    `).join('');
+}
 
-            document.getElementById('rep-trx-table').innerHTML = transactions.map(t => `
-                <tr class="border-b border-slate-800">
-                    <td class="p-3 font-mono font-bold text-brand-400">#${t.id || ' - '}</td>
-                    <td class="p-3 text-slate-400">${t.date || ' - '}</td>
-                    <td class="p-3 font-bold uppercase text-[10px]">${t.method || 'TUNAI'}</td>
-                    <td class="p-3 text-slate-300">${t.items ? t.items.map(i => `${i.name} (${i.qty})`).join(', ') : ''}</td>
-                    <td class="p-3 text-right font-bold text-white">${formatIDR(t.total || 0)}</td>
-                </tr>
-            `).join('');
-        }
+function renderUsersView() {
+    const container = document.getElementById('users-card-container');
+    if(!container) return;
+    container.innerHTML = users.map(u => `
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
+            <div>
+                <h4 class="font-bold text-white text-sm">${u.name}</h4>
+                <p class="text-xs text-brand-400 font-semibold">${u.role} - PIN: ••••</p>
+            </div>
+            <button onclick="deleteUser(${u.id})" class="text-rose-400 text-xs hover:text-rose-300"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+    `).join('');
+}
 
-        function renderUsersView() {
-            const container = document.getElementById('users-card-container');
-            if(!container) return;
-            container.innerHTML = users.map(u => `
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
-                    <div>
-                        <h4 class="font-bold text-white text-sm">${u.name}</h4>
-                        <p class="text-xs text-brand-400 font-semibold">${u.role} - PIN: ••••</p>
-                    </div>
-                    <button onclick="deleteUser(${u.id})" class="text-rose-400 text-xs hover:text-rose-300"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-        }
+function openUserModal() { document.getElementById('modal-user-crud').classList.remove('hidden'); }
+function closeUserModal() { document.getElementById('modal-user-crud').classList.add('hidden'); }
 
-        function openUserModal() { document.getElementById('modal-user-crud').classList.remove('hidden'); }
-        function closeUserModal() { document.getElementById('modal-user-crud').classList.add('hidden'); }
+function saveUserForm(e) {
+    e.preventDefault();
+    const newUser = {
+        id: Date.now(),
+        name: document.getElementById('crud-user-name').value,
+        role: document.getElementById('crud-user-role').value,
+        pin: document.getElementById('crud-user-pin').value
+    };
+    users.push(newUser);
+    localStorage.setItem('jt_users', JSON.stringify(users));
+    closeUserModal();
+    renderUsersView();
+    showToast('User Ditambahkan');
+}
 
-        function saveUserForm(e) {
-            e.preventDefault();
-            const newUser = {
-                id: Date.now(),
-                name: document.getElementById('crud-user-name').value,
-                role: document.getElementById('crud-user-role').value,
-                pin: document.getElementById('crud-user-pin').value
-            };
-            users.push(newUser);
-            localStorage.setItem('jt_users', JSON.stringify(users));
-            closeUserModal();
-            renderUsersView();
-            showToast('User Ditambahkan');
-        }
+function deleteUser(id) {
+    if (users.length <= 1) { alert('Minimal harus ada 1 user!'); return; }
+    users = users.filter(u => u.id !== id);
+    localStorage.setItem('jt_users', JSON.stringify(users));
+    renderUsersView();
+}
 
-        function deleteUser(id) {
-            if (users.length <= 1) { alert('Minimal harus ada 1 user!'); return; }
-            users = users.filter(u => u.id !== id);
-            localStorage.setItem('jt_users', JSON.stringify(users));
-            renderUsersView();
-        }
+function loadSettingsView() {
+    document.getElementById('set-cafe-name').value = settings.cafeName;
+    document.getElementById('set-cafe-address').value = settings.cafeAddress;
+    document.getElementById('set-tax-rate').value = settings.taxRate;
+    document.getElementById('set-default-ops').value = settings.defaultOps || 1460;
+    document.getElementById('set-receipt-footer').value = settings.receiptFooter;
+}
 
-        function loadSettingsView() {
-            document.getElementById('set-cafe-name').value = settings.cafeName;
-            document.getElementById('set-cafe-address').value = settings.cafeAddress;
-            document.getElementById('set-tax-rate').value = settings.taxRate;
-            document.getElementById('set-default-ops').value = settings.defaultOps || 1460;
-            document.getElementById('set-receipt-footer').value = settings.receiptFooter;
-        }
+function saveSettings() {
+    settings = {
+        cafeName: document.getElementById('set-cafe-name').value,
+        cafeAddress: document.getElementById('set-cafe-address').value,
+        taxRate: parseFloat(document.getElementById('set-tax-rate').value) || 0,
+        defaultOps: parseFloat(document.getElementById('set-default-ops').value) || 1460,
+        receiptFooter: document.getElementById('set-receipt-footer').value
+    };
 
-        function saveSettings() {
-            settings = {
-                cafeName: document.getElementById('set-cafe-name').value,
-                cafeAddress: document.getElementById('set-cafe-address').value,
-                taxRate: parseFloat(document.getElementById('set-tax-rate').value) || 0,
-                defaultOps: parseFloat(document.getElementById('set-default-ops').value) || 1460,
-                receiptFooter: document.getElementById('set-receipt-footer').value
-            };
+    localStorage.setItem('jt_settings', JSON.stringify(settings));
+    document.getElementById('label-tax-rate').innerText = settings.taxRate;
+    showToast('Pengaturan Disimpan!');
+}
 
-            localStorage.setItem('jt_settings', JSON.stringify(settings));
-            document.getElementById('label-tax-rate').innerText = settings.taxRate;
-            showToast('Pengaturan Disimpan!');
-        }
-
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ transactions, products, settings, users }, null, 2));
-            const a = document.createElement('a');
-            a.href = dataStr;
-            a.download = `JUICE_TRUE_Backup_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-        }
+function exportData() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ transactions, products, settings, users }, null, 2));
+    const a = document.createElement('a');
+    a.href = dataStr;
+    a.download = `JUICE_TRUE_Backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+}
 
         // ==========================================
         // LOGIKA DINAMIS HARGA & KATEGORI PRODUK POS
