@@ -571,6 +571,7 @@
         ]));
 
         let products = JSON.parse(localStorage.getItem('jt_products') || JSON.stringify([
+            { id: 999, category: 'custom', name: 'Menu Custom / Mix', unit: 'Porsi', stock: 999, price: 0, hppBahan: 0, opsKemasan: 1460, hasVariations: false, img: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80', isCustom: true },
             { id: 101, category: 'juice', name: 'Jus Alpukat', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', hppBahan: 3500, hppKemasan: 1460, price: 5000 }, { size: '16 oz', hppBahan: 5000, hppKemasan: 1460, price: 8000 }, { size: '18 oz', hppBahan: 6500, hppKemasan: 1460, price: 10000 }], img: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&q=80', price: 5000, hppBahan: 3500, opsKemasan: 1460 },
             { id: 102, category: 'juice', name: 'Jus Mangga', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', hppBahan: 3000, hppKemasan: 1460, price: 5000 }, { size: '16 oz', hppBahan: 4500, hppKemasan: 1460, price: 8000 }, { size: '18 oz', hppBahan: 6000, hppKemasan: 1460, price: 10000 }], img: 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=400&q=80', price: 5000, hppBahan: 3000, opsKemasan: 1460 },
             { id: 201, category: 'coffee', name: 'CAFFE LATTE', unit: 'Cup', stock: 100, hasVariations: true, variations: [{ size: '12 oz', hppBahan: 3500, hppKemasan: 1460, price: 5000 }, { size: '16 oz', hppBahan: 5000, hppKemasan: 1460, price: 8000 }, { size: '18 oz', hppBahan: 6500, hppKemasan: 1460, price: 10000 }], img: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80', price: 5000, hppBahan: 3500, opsKemasan: 1460 },
@@ -1226,6 +1227,19 @@
             const prod = products.find(p => p.id === id);
             if (!prod) return;
 
+            if (prod.isCustom || prod.category === 'custom') {
+        const customName = prompt("Masukkan Nama Pesanan Custom / Mix:", "Mix Special Request");
+        if (!customName) return; // Batal jika ditutup
+
+        const customPrice = parseFloat(prompt(`Masukkan Harga Jual untuk "${customName}" (Rp):`, "10000")) || 0;
+        if (customPrice <= 0) {
+            alert("Harga tidak valid!");
+            return;
+        }
+
+        addToCart(prod.id, customName, customPrice, prod.img, 0, prod.opsKemasan || 1460);
+        return;
+    }
             if ((prod.category === 'juice' || prod.category === 'coffee') && prod.hasVariations && prod.variations && prod.variations.length > 0) {
                 document.getElementById('var-title').innerText = `Pilih Ukuran - ${prod.name}`;
                 document.getElementById('var-options-container').innerHTML = prod.variations.map(v => {
